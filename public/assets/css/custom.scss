@@ -1,0 +1,166 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+$primary: #3A3A3A;
+$secondary: #fafafa;
+$ternary: #d4d4d4;
+$success: #89da85;
+$danger: #eb9494;
+$warning: #dee57a;
+$darkness: #212529;
+$lightness: #767676;
+$white1: rgb(246, 246, 246);
+$white2: #bfbfbf;
+$white3: #F0F0F0;
+$white4: #EBEBEB;
+
+
+$theme-colors: (
+    "primary": $primary,
+    "secondary": $secondary,
+    "success": $success,
+    "danger": $danger,
+    "warning": $warning,
+    "white1": $white1,
+    "white2": $white2,
+);
+
+$font-family-base: "Montserrat Alternates", sans-serif;
+$font-weight-base: 400;
+$font-size-base: 1rem;
+
+@import "scss\\bootstrap.scss";
+
+.text-lightness {
+    color: $lightness !important;
+}
+
+.navbar-toggler {
+    border-radius: 0; // Remove rounded corners
+    border-width: 2px; // Set thinner border
+    border-color: $secondary; // Set border color to white
+}
+
+.navbar-toggler {
+    transition: transform 0.3s ease-in-out;
+
+    &.collapsed {
+        transform: scale(1);
+    }
+
+    &:not(.collapsed) {
+        transform: scale(1.1);
+    }
+}
+
+
+.navbar-toggler:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.05rem rgba($primary, 0.2);
+    border-color: $primary;
+}
+
+.navbar-toggler-icon {
+    border-radius: 0; // Remove rounded corners
+    width: 2rem; // Set width
+    height: 2rem; // Set height
+}
+
+
+.btn {
+    border-radius: 0.1rem;
+}
+
+.btn-lg {
+    font-size: 1.75rem;
+    padding: 0.5rem 1rem;
+}
+
+.form-control {
+    //font-size: 1rem;
+    //font-weight: 100;
+    border-radius: 0.15rem;
+    background-color: $white3;
+    color: $primary;
+    border: 1px solid $ternary;
+}
+
+.form-select {
+    //font-size: 1rem;
+    //font-weight: 100;
+    border-radius: 0.15rem;
+    background-color: $secondary;
+    color: $primary;
+    border: 1px solid $ternary;
+}
+
+.input-group-text {
+    //font-size: 1rem;
+    //font-weight: 100;
+    border-radius: 0.15rem;
+    background-color: $secondary;
+    color: $primary;
+    border: 1px solid $ternary;
+}
+
+.form-check-input {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 0.1rem;
+    background-color: $secondary;
+    color: $primary;
+    border: 1px solid $ternary;
+}
+
+.form-control:disabled {
+    background-color: $ternary;
+    color: $darkness;
+    border: 1px solid $ternary;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: $lightness;
+}
+
+
+.card {
+    border-radius: 0.1rem;
+    background-color: $secondary;
+    border: 1px solid $secondary;
+    box-shadow: 0 0 0.5rem rgba($ternary, 0.2);
+}
+
+.card-header {
+    background-color: $primary;
+    color: $primary;
+    border-radius: 0.15rem 0.15rem 0 0;
+}
+
+.card-body {
+    background-color: $secondary;
+    color: $primary;
+}
+
+body {
+    color: #212529;
+    background-color: $white4;
+}
+
+ul>li {
+    list-style: none;
+    margin: 0;
+    padding: 0.15rem 1rem;
+}
+
+
+.fs-7 {
+    font-size: 0.875rem;
+}
+
+.fs-8 {
+    font-size: 0.75rem;
+}
+
+.fs-9 {
+    font-size: 0.625rem;
+}

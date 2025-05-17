@@ -1,0 +1,14 @@
+{# filepath: templates/store/detail.twig #}
+{% extends "layout.twig" %}
+
+{% block content %}
+    <h1>{{ product.name }}</h1>
+    <p>{{ product.description }}</p>
+    <p>precio: ${{ product.price }}</p>
+    <form method="post" action="{{basePath}}/cart/add">
+        <input type="hidden" name="product_id" value="{{ product.id }}">
+        <input type="number" name="quantity" value="1" min="1" style="width: 60px;">
+        <button type="submit">agregar</button>
+    </form>
+    <a href="{{basePath}}/store">Volver  to store</a>
+{% endblock %}

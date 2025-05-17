@@ -46,10 +46,11 @@ class CartRepository implements CartRepositoryInterface
     $products = [];
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $product = [
-            'idproducto' => $row['idproducto'],
-            'nombre' => $row['producto'],
-            'descripcion' => $row['descripcion'],
-            'precio' => $row['precio'],
+            'id' => $row['idproducto'],
+            'name' => $row['producto'],
+            'description' => $row['descripcion'],
+            'price' => $row['precio'],
+            'picture' => $row['imagen'],
             //'cantidad' => $row['cantidad'],
             //'personalizacion' => $row['personalizacion'],
             //'instrucciones' => $row['instrucciones'],
@@ -60,9 +61,9 @@ class CartRepository implements CartRepositoryInterface
     return $products;
 }
 
-    public function addProductToCart(int $idcliente, int $productid):void{
-        //si el producto no esta en el carrito, lo agrega, si ya esta el producto aumentar la cantidad
+    public function addItemToCart(int $idcliente, int $productid):void{
+
     }
-    public function removeProductFromCart(int $idcliente, int $productid):void{
+    public function removeItemFromCart(int $idcliente, int $productid):void{
     }
 }

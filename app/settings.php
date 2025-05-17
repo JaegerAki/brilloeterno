@@ -31,6 +31,7 @@ return function (ContainerBuilder $containerBuilder) {
                     'timezone' => 'America/Lima',
                     'locale' => 'es_PE',
                     'charset' => 'UTF-8',
+                    'picture_path' => '/brilloeterno/public/assets/img/_tmp',
                 ],
                 'database' => [
                     'driver' => 'mysql',

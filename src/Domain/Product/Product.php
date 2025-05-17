@@ -16,8 +16,8 @@ class Product implements JsonSerializable
     public function __construct(?int $id, string $name, string $description, float $price, string $picture)
     {
         $this->id = $id;
-        $this->name = strtolower($name);
-        $this->description = ucfirst($description);
+        $this->name = $name;
+        $this->description = $description;
         $this->price = $price;
         $this->picture = $picture;
     }

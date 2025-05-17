@@ -16,19 +16,7 @@ class AddCartAction
 
     public function __invoke(Request $request, Response $response, array $args = []): Response
     {
-        $productId = (int) $args['id'];
-        if (!isset($_SESSION['cart'])) {
-            $_SESSION['cart'] = [];
-        }
-        if (!isset($_SESSION['cart'][$productId])) {
-            $_SESSION['cart'][$productId] = 1;
-        } else {
-            $_SESSION['cart'][$productId]++;
-        }
 
-        return $response
-            ->withHeader('Location', '/cart')
-            ->withStatus(302);
     }
 }
 ?>

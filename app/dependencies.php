@@ -50,10 +50,13 @@ return function (ContainerBuilder $containerBuilder) {
             $appName = $settings->get('application')['name'];
             $appAuthor = $settings->get('application')['author'];
             $appVersion = $settings->get('application')['version'];
+            $picturePath = $settings->get('application')['picture_path'];
             $twig->getEnvironment()->addGlobal('basePath', $basePath);
+            $twig->getEnvironment()->addGlobal('picturePath', $picturePath);
             $twig->getEnvironment()->addGlobal('appName', $appName);
             $twig->getEnvironment()->addGlobal('appAuthor', $appAuthor);
             $twig->getEnvironment()->addGlobal('appVersion', $appVersion);
+            $twig->getEnvironment()->addGlobal('appVersion', $picturePath);
             return $twig;
         },
     ]);

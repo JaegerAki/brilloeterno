@@ -7,22 +7,30 @@
             <div class="row row-cols-1 row-cols-md-3 g-4">
                 {% for product in products %}
                     <div class="col">
-                        <div class="card h-100 shadow-sm">
+                        <div class="card h-100 shadow-sm ">
                             {% if product.picture is not empty %}
-                                <img src="{{ basePath }}/images/products/{{ product.picture }}" class="card-img-top" alt="{{ product.name }}">
+                                <img src="{{ picturePath }}/{{ product.picture }}" class="card-img-top" alt="{{ product.name }}" style="height: 400px; object-fit: cover;">
                             {% else %}
-                                <img src="{{ basePath }}/public/assets/img/no_image.jpg" class="card-img-top" alt="Default Image">
+                                <img src="{{ basePath }}/public/assets/img/no_image.jpg" class="card-img-top" alt="Default Image" style="height: 400px; object-fit: cover;">
                             {% endif %}
                             <div class="card-body d-flex flex-column">
                                 <h5 class="card-title">{{ product.name }}</h5>
                                 <p class="card-text">{{ product.description }}</p>
-                                <p class="card-text fw-bold text-primary mb-3">Precio: ${{ product.price }}</p>
-                                <form method="post" action="{{ basePath }}/cart/add" class="mt-auto">
-                                    <input type="hidden" name="product_id" value="{{ product.id }}">
-                                    <button type="submit" class="btn btn-success w-100">
-                                        <i class="bi bi-cart-plus"></i> Añadir al carrito
-                                    </button>
-                                </form>
+                                
+                                <div class="mt-auto w-100">
+                                    <div class="d-flex justify-content-end align-items-center mt-3" style="gap: 0.5rem;">
+                                        <div class="me-auto">
+                                            <p class="fw-bold text-primary mb-0">PEN {{ product.price }}</p>
+                                        </div>
+                                        <form method="post" action="{{ basePath }}/cart/add" class="mb-0 d-flex align-items-center" style="gap: 0.5rem;">
+                                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                                            <button type="button" class="btn btn-primary icon-eye" data-bs-toggle="modal" data-bs-target="#productModal{{ product.id }}">
+                                                Ver
+                                            </button>
+                                            <button type="submit" class="btn icon-cart-b" title="Agregar al carrito"></button>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

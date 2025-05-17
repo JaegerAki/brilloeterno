@@ -16,13 +16,14 @@ class RemoveCartAction
 
     public function __invoke(Request $request, Response $response, array $args = []): Response
     {
-        $productId = (int) $args['id'];
-        if (isset($_SESSION['cart'][$productId])) {
-            unset($_SESSION['cart'][$productId]);
-        }
+        $customerId = (int)$args['customerid'];
+        $productId = (int)$args['productid'];
 
-        return $response
-            ->withHeader('Location', '/cart')
-            ->withStatus(302);
+        // Remove the item from the cart
+        $this->cartRepository->removeItemFromCart($customerId, $productId);
+
+        // Return a response
+        $response->getBody()->write(json_encode(['message' => 'Item removed from cart successfully.']));
+        return $response->withHeader('Content-Type', 'application/json');
     }
 }

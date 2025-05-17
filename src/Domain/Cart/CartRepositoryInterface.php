@@ -25,7 +25,7 @@ interface CartRepositoryInterface
      * @param int $productid The ID of the product to remove.
      * @return void
      */
-    public function addProductToCart(int $customerid, int $productid): void;
-    public function removeProductFromCart(int $customerid, int $productid): void;
+    public function addItemToCart(int $customerid, int $productid): void;
+    public function removeItemFromCart(int $customerid, int $productid): void;
 }
 ?>

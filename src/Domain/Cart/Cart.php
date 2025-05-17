@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace App\Domain\Cart;
 use App\Domain\Product\Product;
+use App\Domain\Cart\CartItem;
 use JsonSerializable;
 class Cart implements JsonSerializable
 {
@@ -9,18 +10,18 @@ class Cart implements JsonSerializable
     private int $customerId;
 
     /**
-     * @var Product[]
+     * @var CartItem[]
      */
-    private array $products;
+    private array $cartItems;
 
     /**
      * @param int $customerId
-     * @param Product[] $products
+     * @param CartItem[] $cartItems
      */
-    public function __construct(?int $customerId, ?array $products)
+    public function __construct(?int $customerId, ?array $cartItems)
     {
         $this->customerId = $customerId;
-        $this->products = $products;
+        $this->cartItems = $cartItems ?? [];
     }
 
     public function getCustomerId(): int
@@ -29,37 +30,39 @@ class Cart implements JsonSerializable
     }
 
     /**
-     * @return Product[]
+     * @return CartItem[]
      */
     public function getProducts(): array
     {
-        return $this->products;
+        return $this->cartItems;
     }
 
-    /**
-     * @param Product[] $products
-     */
-    public function setProducts(array $products): void
+
+    public function addItem(Product $product, int $quantity = 1): void
     {
-        $this->products = $products;
+        foreach ($this->cartItems as $item) {
+            if ($item->getProduct()->getId() === $product->getId()) {
+                $item->addQuantity($quantity);
+                return;
+            }
+        }
+        $this->cartItems[] = new CartItem($product, $quantity);
     }
 
-    public function addProduct(Product $product): void
+    public function removeItem(Product $product, int $quantity = 1): void
     {
-        $this->products[] = $product;
-    }
-
-    public function removeProduct(Product $product): void
-    {
-        foreach ($this->products as $key => $cartProduct) {
-            if ($cartProduct->getId() === $product->getId()) {
-                unset($this->products[$key]);
-                break;
+        foreach ($this->cartItems as $item) {
+            if ($item->getProduct()->getId() === $product->getId()) {
+                $item->removeQuantity($quantity);
+                if ($item->getQuantity() <= 0) {
+                    $this->cartItems = array_filter($this->cartItems, function ($i) use ($item) {
+                        return $i !== $item;
+                    });
+                }
+                return;
             }
         }
     }
-
-    
 
     #[\ReturnTypeWillChange]
     public function jsonSerialize(): array
@@ -67,7 +70,7 @@ class Cart implements JsonSerializable
         return [
             'id' => $this->id,
             'customerId' => $this->customerId,
-            'products' => $this->products,
+            'cartItems' => $this->cartItems,
         ];
     }
 }

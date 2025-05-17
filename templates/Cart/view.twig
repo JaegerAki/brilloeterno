@@ -36,7 +36,7 @@
                         {% for product in cart %}
                             <div class="d-flex align-items-center mb-3 position-relative">
                                 <div class="position-relative">
-                                    <img src="{{ product.picture is defined and product.picture ? product.picture : basePath ~ '/public/assets/img/no_image.jpg' }}" alt="{{ product.name }}" width="48" height="48" class=" border" style="object-fit:cover;">
+                                    <img src="{{ product.picture is defined and product.picture ? picturePath ~ '/' ~ product.picture : '' }}" alt="{{ product.name }}" width="48" height="48" class=" border" style="object-fit:cover;">
                                     <span class="position-absolute start-50 top-50 bg-primary text-white small" style="min-width:24px; min-height:24px; font-size:0.85em; display:flex; align-items:center; justify-content:center;">
                                         {{ product.quantity }}
                                     </span>

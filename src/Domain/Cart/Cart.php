@@ -2,13 +2,15 @@
 declare(strict_types=1);
 namespace App\Domain\Cart;
 use App\Domain\Product\Product;
-use App\Domain\Cart\CartItem;
+use App\Domain\Cart\ValueObject\CartItem;
+use IteratorAggregate;
 use JsonSerializable;
-class Cart implements JsonSerializable
-{
-    private ?int $id;
-    private int $customerId;
+use Traversable;
+use ArrayIterator;
 
+class Cart implements JsonSerializable, IteratorAggregate
+{
+    private int $customerId;
     /**
      * @var CartItem[]
      */
@@ -18,10 +20,10 @@ class Cart implements JsonSerializable
      * @param int $customerId
      * @param CartItem[] $cartItems
      */
-    public function __construct(?int $customerId, ?array $cartItems)
+    public function __construct(?int $customerId, array $cartItems = [])
     {
         $this->customerId = $customerId;
-        $this->cartItems = $cartItems ?? [];
+        $this->cartItems = $cartItems;
     }
 
     public function getCustomerId(): int
@@ -37,40 +39,37 @@ class Cart implements JsonSerializable
         return $this->cartItems;
     }
 
-
-    public function addItem(Product $product, int $quantity = 1): void
+    public function getTotalPrice(): float
     {
+        $total = 0.0;
         foreach ($this->cartItems as $item) {
-            if ($item->getProduct()->getId() === $product->getId()) {
-                $item->addQuantity($quantity);
-                return;
-            }
+            $total += $item->getPrice();
         }
-        $this->cartItems[] = new CartItem($product, $quantity);
+        return $total;
     }
 
-    public function removeItem(Product $product, int $quantity = 1): void
+    public function getTotalItems(): int
     {
+        $total = 0;
         foreach ($this->cartItems as $item) {
-            if ($item->getProduct()->getId() === $product->getId()) {
-                $item->removeQuantity($quantity);
-                if ($item->getQuantity() <= 0) {
-                    $this->cartItems = array_filter($this->cartItems, function ($i) use ($item) {
-                        return $i !== $item;
-                    });
-                }
-                return;
-            }
+            $total += $item->getQuantity();
         }
+        return $total;
+    }
+
+    public function getIterator(): Traversable
+    {
+        return new ArrayIterator($this->cartItems);
     }
 
     #[\ReturnTypeWillChange]
     public function jsonSerialize(): array
     {
         return [
-            'id' => $this->id,
             'customerId' => $this->customerId,
-            'cartItems' => $this->cartItems,
+            'cartItems' =>  $this->cartItems,
+            'totalPrice' => $this->getTotalPrice(),
+            'totalItems' => $this->getTotalItems(),
         ];
     }
 }

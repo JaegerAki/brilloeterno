@@ -1,0 +1,12 @@
+<aside>
+	<nav class="nav flex-column w-100">
+		<a class="nav-link text-white" href="{{basePath}}/admin">Dashboard</a>
+		{% if dashboardData is not empty %}
+			{% for menuOpc in dashboardData.menuOptions %}
+				<a class="nav-link text-white" href="#" data-id="{{menuOpc.route}}">{{menuOpc.name}}</a>
+			{% endfor %}
+		{% else %}
+			<a class="nav-link text-white">No tiene permisos</a>
+		{% endif %}
+	</nav>
+</aside>

@@ -20,6 +20,7 @@
         "ext-json": "*",
         "monolog/monolog": "^2.8",
         "php-di/php-di": "^6.4",
+        "vlucas/phpdotenv": "^5.6",
         "slim/psr7": "^1.5",
         "slim/slim": "^4.10",
         "slim/twig-view": "^3.4"
@@ -41,7 +42,8 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "src/"
+            "App\\": "src/",
+            "Migration\\": "database/"
         }
     },
     "autoload-dev": {
@@ -51,6 +53,15 @@
     },
     "scripts": {
         "start": "php -S localhost:8080 -t public",
-        "test": "phpunit"
+        "test": "phpunit",
+        "db:create": "php database/create_db.php",
+        "db:seed": "php database/seed_db.php",
+        "db:clean": "php database/clean_db.php",
+        "db:drop": "php database/drop_db.php",
+        "db:setup": [
+            "@db:drop",
+            "@db:create",
+            "@db:seed"
+    ]
     }
 }

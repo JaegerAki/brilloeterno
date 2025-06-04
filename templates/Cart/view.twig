@@ -2,80 +2,114 @@
 {% extends "layout.twig" %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-6 mb-4">
-            <div class="card shadow-sm border-0 p-4">
-                <div class="card-body">
-                    <h4 class="mb-4 fw-bold">Correo electrónico</h4>
-                    <form>
-                        <div class="mb-3">
-                            <!--<label for="email" class="form-label text-uppercase small">Correo electrónico</label>-->
-                            <input type="email" class="form-control" id="email" placeholder="Correo electrónico" required>
-                        </div>
-                        <div class="mb-2 text-muted small fw-bold fs-8 text-lightness">
-                           Recibirás los recibos y las notificaciones en este correo electrónico<br>
-                            ¿Ya tienes una cuenta? <a class ="text-lightness" href="{{ basePath }}/auth/login">Iniciar sesión</a>
-                        </div>
-                        <div class="form-check mb-3">
-                            <input class="form-check-input mr-1" type="checkbox" id="newsletter">
-                            <label class="form-check-label small" for="newsletter">
-                                Regístrate para recibir noticias y actualizaciones
-                            </label>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Continuar</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6">
-            <div class="card shadow-sm border-0 mb-4 p-4">
-                <div class="card-body">
-                    <h4 class="mb-4 fw-bold">Resumen del pedido</h4>
-                    {% if cart is not empty %}
-                        {% for product in cart %}
-                            <div class="d-flex align-items-center mb-3 position-relative">
-                                <div class="position-relative">
-                                    <img src="{{ product.picture is defined and product.picture ? picturePath ~ '/' ~ product.picture : '' }}" alt="{{ product.name }}" width="48" height="48" class=" border" style="object-fit:cover;">
-                                    <span class="position-absolute start-50 top-50 bg-primary text-white small" style="min-width:24px; min-height:24px; font-size:0.85em; display:flex; align-items:center; justify-content:center;">
-                                        {{ product.quantity }}
-                                    </span>
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <div class="">{{ product.name }}</div>
-                                    <a href="{{ basePath }}/cart/remove/{{ product.id }}" class="small text-danger">eliminar</a>
-                                </div>
-                                <div class="ms-3">PEN {{ (product.price * product.quantity)|number_format(2, '.', ',') }}</div>
-                            </div>
-                        {% endfor %}
-                        <hr>
-                        <div class="d-flex justify-content-between">
-                            <span>Subtotal</span>
-                            <span>
-                                USD {{ cart|reduce((carry, p) => carry + (p.price * p.quantity), 0)|number_format(2, '.', ',') }}
-                            </span>
-                        </div>
-                        <div class="d-flex justify-content-between fw-bold fs-5 mt-2">
-                            <span>Total</span>
-                            <span>
-                                USD {{ cart|reduce((carry, p) => carry + (p.price * p.quantity), 0)|number_format(2, '.', ',') }}
-                            </span>
-                        </div>
-                        <div class="text-center mt-3">
-                            <a href="{{ basePath }}/cart/checkout" class="btn btn-primary w-100">Ir a pagar</a>
-                        </div>
-                        <div class="text-center mt-3 small text-muted">
-                            <span class="icon-check">ÁREA DE PAGO SSL SEGURA</span>
-                        </div>
-                    {% else %}
-                        <div class="alert alert-info text-center mb-0">
-                            Tu carrito está vacío.
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
+	<div class="container py-5">
+		<div class="row justify-content-center">
+			<div class="col-lg-6 mb-4">
+				<div class="card shadow-sm border-0 p-4">
+					<div class="card-body">
+						<h4 class="mb-4 fw-bold">Correo electrónico</h4>
+						<form>
+							<div
+								class="mb-3">
+								<!--<label for="email" class="form-label text-uppercase small">Correo electrónico</label>-->
+								<input type="email" class="form-control" id="email" placeholder="Correo electrónico" required>
+							</div>
+							<div class="mb-2 text-muted small fw-bold fs-8 text-lightness">
+								Recibirás los recibos y las notificaciones en este correo electrónico<br>
+								¿Ya tienes una cuenta?
+								<a class="text-lightness" href="{{ basePath }}/auth/login">Iniciar sesión</a>
+							</div>
+							<div class="form-check mb-3">
+								<input class="form-check-input mr-1" type="checkbox" id="newsletter">
+								<label class="form-check-label small" for="newsletter">
+									Regístrate para recibir noticias y actualizaciones
+								</label>
+							</div>
+							<button type="submit" class="btn btn-primary w-100">Continuar</button>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-6">
+				<div class="card shadow-sm border-0 mb-4 p-4">
+					<div class="card-body">
+						<h4 class="mb-4 fw-bold">Resumen del pedido</h4>
+						{% if cart is not empty %}
+							{% for item in cart %}
+								<div class="row align-items-center mb-3 gx-2">
+									<div class="col-auto">
+										<img src="{{ item.product.picture is defined and item.product.picture ? picturePath ~ '/' ~ item.product.picture : '' }}" alt="{{ item.product.name }}" width="48" height="48" class="border" style="object-fit:cover;">
+									</div>
+									<div class="col">
+										<div>{{ item.product.name }}</div>
+										{# <a href="{{ basePath }}/cart/remove/{{ item.product.id }}" class="small text-danger">eliminar</a> #}
+									</div>
+									<div class="col-2">
+										<a data-id="{{ item.product.id }}" href="#" class="btn btn-decrease btn-outline-secondary btn-sm px-1 py-0 me-0" style="font-size:1.2em; line-height:1; color: black;">-</a>
+										<span class="mx-1">{{ item.quantity }}</span>
+										<a data-id="{{ item.product.id }}" href="#" class="btn btn-increase btn-outline-secondary btn-sm px-1 py-0 ms-0" style="font-size:1.2em; line-height:1; color: black;">+</a>
+									</div>
+									<div class="col-3">
+										PEN
+										{{ ((item.product.price - item.discount) * item.quantity)|number_format(2, '.', ',') }}
+									</div>
+								</div>
+							{% endfor %}
+							<hr>
+							<div class="d-flex justify-content-between fw-bold fs-5 mt-2">
+								<span>Total</span>
+								<span>
+									USD
+									{{ cart.totalPrice|number_format(2, '.', ',') }}
+								</span>
+							</div>
+							<div class="text-center mt-3">
+								<a href="{{ basePath }}/cart/checkout" class="btn btn-primary w-100">Ir a pagar</a>
+							</div>
+							<div class="text-center mt-3 small text-muted">
+								<span class="icon-check">ÁREA DE PAGO SSL SEGURA</span>
+							</div>
+						{% else %}
+							<div class="alert alert-info text-center mb-0">
+								Tu carrito está vacío.
+							</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+	document.querySelectorAll('.btn-increase').forEach(btn => {
+	    btn.addEventListener('click', function(e) {
+	        e.preventDefault();
+	        updateCart(this.dataset.id, 'increase');
+	    });
+	});
+	document.querySelectorAll('.btn-decrease').forEach(btn => {
+	    btn.addEventListener('click', function(e) {
+	        e.preventDefault();
+	        updateCart(this.dataset.id, 'decrease');
+	    });
+	});
+	
+	function updateCart(productId, action) {
+	    fetch("{{ basePath }}/api/cart/" + action, {
+	        method: 'POST',
+	        headers: {
+	            'Content-Type': 'application/json'
+	        },
+	        body: JSON.stringify({ product_id: productId })
+	    })
+	    .then(res => res.json())
+	    .then(data => {
+	        console.log(data);
+	        location.reload();
+	    })
+	    .catch((e) => {
+	        console.error('Error:', e);
+	        alert('Error al actualizar el carrito')
+        });
+	}
+	</script>
 {% endblock %}

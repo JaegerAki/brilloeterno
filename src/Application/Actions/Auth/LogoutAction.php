@@ -27,7 +27,6 @@ class LogoutAction
         //$_SESSION['flash_message'] = 'Te desconectaste. Vuelve pronto.';
 
         $baseUrl = $this->twig->getEnvironment()->getGlobals()['basePath'] ?? '/brilloeterno';
-        // Redirect to the home
         return $response
             ->withHeader('Location', $baseUrl . '/auth/login')
             ->withStatus(302);

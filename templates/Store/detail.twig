@@ -2,13 +2,54 @@
 {% extends "layout.twig" %}
 
 {% block content %}
-    <h1>{{ product.name }}</h1>
-    <p>{{ product.description }}</p>
-    <p>precio: ${{ product.price }}</p>
-    <form method="post" action="{{basePath}}/cart/add">
-        <input type="hidden" name="product_id" value="{{ product.id }}">
-        <input type="number" name="quantity" value="1" min="1" style="width: 60px;">
-        <button type="submit">agregar</button>
-    </form>
-    <a href="{{basePath}}/store">Volver  to store</a>
+	<div class="product-detail">
+		<div class="row">
+			<div class="col-md-6">
+				<img src="{{ picturePath }}/{{ storeItemDetail.storeItem.product.picture }}" alt="{{ storeItemDetail.storeItem.product.name }}" class="product-image img-fluid">
+			</div>
+			<div class="col-md-6">
+				<h1>{{ storeItemDetail.storeItem.product.name }}</h1>
+				<p class="product-price">${{ storeItemDetail.storeItem.product.price|number_format(2, '.', ',') }}</p>
+				<a data-id="{{ storeItemDetail.storeItem.product.id }}" href="#" class="btn btn-add btn-primary">Agregar al carrito</a>
+				<a href="{{ basePath }}/store" class="btn btn-secondary mt-2">Volver a la tienda</a>
+			</div>
+		</div>
+		<div class="row mt-4">
+			<div class="col-12">
+				<h3>Descripción</h3>
+				<p class="product-description">{{ storeItemDetail.storeItem.product.description }}</p>
+				{# Aquí puedes agregar más detalles si es necesario #}
+			</div>
+		</div>
+	</div>
+	 <script>
+			
+			document.querySelector('.btn-add').addEventListener('click', function(event) {
+				event.preventDefault();
+				const productId = this.getAttribute('data-id');
+				// Aquí puedes agregar la lógica para agregar el producto al carrito
+				console.log('Producto agregado al carrito:', productId)
+				addToCart(productId);
+			});
+			function addToCart(productId) {
+				// Aquí puedes agregar la lógica para agregar el producto al carrito
+				console.log('Producto agregado al carrito:', productId);
+				fetch('{{ basePath }}/api/cart/add', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({ product_id: productId })
+				})
+				.then(res => res.json())
+		    .then(data => {
+		        console.log(data);
+		        location.reload();
+		    })
+		    .catch((e) => {
+		        console.error('Error:', e);
+		        alert('Error al actualizar el carrito')
+	        });
+		}
+		</script>
 {% endblock %}

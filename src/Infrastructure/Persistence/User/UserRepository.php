@@ -1,9 +1,12 @@
 <?php
-
+declare(strict_types=1);
 namespace App\Infrastructure\Persistence\User;
 
 use App\Domain\User\User;
 use App\Domain\User\UserRepositoryInterface;
+use App\Domain\Common\ValueObject\Email;
+use App\Domain\User\ValueObject\Password;
+use App\Domain\User\ValueObject\PersonalInfo;
 use PDO;
 
 class UserRepository implements UserRepositoryInterface
@@ -18,34 +21,46 @@ class UserRepository implements UserRepositoryInterface
     public function findById(int $id): ?User
     {
         $stmt = $this->db->prepare(
-            'SELECT 
+            "SELECT 
                         idcliente as id
-                        ,email as username
-                    FROM cliente WHERE id = :id');
+                        ,email as email
+                        ,nombres as fullname
+                        ,'' as direction
+                        ,'' as phone
+                    FROM cliente WHERE id = :id"
+        );
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch();
-        if (!$row) return null;
+        if (!$row)
+            return null;
         return new User(
-            $row['username'],
-            $row['first_name'],
-            $row['last_name'],
-            $row['email'],
-            $row['password']
+            $row['id'],
+            new PersonalInfo($row['fullname'], $row['direction'], $row['phone']),
+            new Email($row['email']),
+            new Password($row['password']),
         );
     }
 
-    public function findByUsername(string $username): ?User
+    public function findByUsername(string $email): ?User
     {
-        $stmt = $this->db->prepare('SELECT id,username,first_name,last_name,email FROM users WHERE username = :username');
-        $stmt->execute(['username' => $username]);
+        $stmt = $this->db->prepare(
+            "SELECT 
+                        idcliente as id
+                        ,email as email
+                        ,nombres as fullname
+                        ,'' as direction
+                        ,'' as phone
+                    FROM cliente WHERE id = :id"
+        );
+        $stmt->execute(['email' => $email]);
         $row = $stmt->fetch();
-        if (!$row) return null;
+        if (!$row)
+            return null;
         return new User(
             $row['id'],
-            $row['first_name'], 
-            $row['last_name'],
-            $row['email'],
-            $row['password']
+            new PersonalInfo($row['fullname'], $row['direction'], $row['phone']),
+            new Email($row['email']),
+            new Password($row['password']),
         );
     }
 
@@ -53,20 +68,18 @@ class UserRepository implements UserRepositoryInterface
     {
         if ($user->getId()) {
             // Update existing user
-            $stmt = $this->db->prepare('UPDATE users SET username = :username, first_name = :firstName, last_name = :lastName, email=:email ,password = :password WHERE id = :id');
+            $stmt = $this->db->prepare('UPDATE users SET email = :email, nombres = :fullname, last_name = :lastName, email=:email ,password = :password WHERE id = :id');
             $stmt->execute([
-                'firstName' => $user->getFirstName(),
-                'lastName' => $user->getLastName(),
+                'fullname' => $user->getPersonalInfo()->getFullname(),
                 'email' => $user->getEmail(),
                 'password' => $user->getPasswordHash(),
                 'id' => $user->getId(),
             ]);
         } else {
             // Insert new user
-            $stmt = $this->db->prepare('INSERT INTO users (username, first_name, last_name,email, password) VALUES (:username, :firstName, :lastName, :password)');
+            $stmt = $this->db->prepare('INSERT INTO users (email, nombres, last_name,email, password) VALUES (:email, :fullname, :lastName, :password)');
             $stmt->execute([
-                'firstName' => $user->getFirstName(),
-                'lastName' => $user->getLastName(),
+                'fullname' => $user->getPersonalInfo()->getFullname(),
                 'email' => $user->getEmail(),
                 'password' => $user->getPasswordHash(),
             ]);

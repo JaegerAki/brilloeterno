@@ -6,8 +6,14 @@ use App\Application\Settings\Settings;
 use App\Application\Settings\SettingsInterface;
 use DI\ContainerBuilder;
 use Monolog\Logger;
+use Dotenv\Dotenv;
+
+// Load environment variables from .env file
+$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->load();
 
 return function (ContainerBuilder $containerBuilder) {
+    
 
     $containerBuilder->addDefinitions([
         SettingsInterface::class => function () {
@@ -34,11 +40,11 @@ return function (ContainerBuilder $containerBuilder) {
                     'picture_path' => '/brilloeterno/public/assets/img/_tmp',
                 ],
                 'database' => [
-                    'driver' => 'mysql',
-                    'server' => 'localhost',
-                    'dbname' => 'brilloeterno',
-                    'username' => 'root',
-                    'password' => '',
+                    'driver' => $_ENV['DB_DRIVER'] ?? 'mysql',
+                    'server' => $_ENV['DB_HOST'] ?? 'localhost',
+                    'dbname' => $_ENV['DB_NAME'] ?? 'brilloeterno',
+                    'username' => $_ENV['DB_USER'] ?? 'root',
+                    'password' => $_ENV['DB_PASS'] ?? '',
                 ],
                 'email' => [
                     'host' => 'smtp.example.com',
@@ -50,6 +56,7 @@ return function (ContainerBuilder $containerBuilder) {
                 'twig' => [
                     'path' => __DIR__ . '/../templates',
                     'cache' => false,
+                    'debug' => true,
                 ],
             ]);
         }

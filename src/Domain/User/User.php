@@ -5,31 +5,32 @@ declare(strict_types=1);
 namespace App\Domain\User;
 
 use JsonSerializable;
+use App\Domain\User\ValueObject\Password;
+use App\Domain\User\ValueObject\PersonalInfo;
+use App\Domain\Common\ValueObject\Email;
+use App\Domain\User\ValueObject\Phone;
+use Person;
 
 class User implements JsonSerializable
 {
     private ?int $id;
 
-    private string $firstName;
+    private PersonalInfo $personalInfo;
 
-    private string $lastName;
+    private Email $email;
 
-    private string $email;
-
-    private ?string $passwordHash;
+    private Password $password;
 
     public function __construct(
         ?int $id,
-        string $firstName,
-        string $lastName,
-        string $email,
-        ?string $passwordHash = null
+        PersonalInfo $personalInfo,
+        Email $email,
+        ?Password $password
     ) {
         $this->id = $id;
-        $this->firstName = ucfirst($firstName);
-        $this->lastName = ucfirst($lastName);
-        $this->email = strtolower($email);
-        $this->passwordHash = $passwordHash;
+        $this->personalInfo = $personalInfo;
+        $this->email = $email;
+        $this->password = $password;
     }
 
     public function getId(): ?int
@@ -38,19 +39,14 @@ class User implements JsonSerializable
     }
 
 
-    public function getFirstName(): string
+    public function getPersonalInfo(): PersonalInfo
     {
-        return $this->firstName;
+        return $this->personalInfo;
     }
 
-    public function getLastName(): string
+    public function getPasswordHash(): ?Password
     {
-        return $this->lastName;
-    }
-
-    public function getPasswordHash(): ?string
-    {
-        return $this->passwordHash;
+        return $this->password;
     }
 
     public function getEmail(): string
@@ -63,9 +59,9 @@ class User implements JsonSerializable
     {
         return [
             'id' => $this->id,
-            'firstName' => $this->firstName,
-            'lastName' => $this->lastName,
+            'personalInfo' => $this->personalInfo,
             'email' => $this->email,
+            'password' => $this->password,
         ];
     }
 }

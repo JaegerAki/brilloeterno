@@ -46,6 +46,11 @@ return function (ContainerBuilder $containerBuilder) {
             $settings = $c->get(SettingsInterface::class);
             $twigSettings = $settings->get('twig');
             $twig = Twig::create($twigSettings['path'], ['cache' => $twigSettings['cache']]);
+            
+            if ($twigSettings['debug']) {
+                $twig->getEnvironment()->addExtension(new \Twig\Extension\DebugExtension());
+            }
+
             $basePath = $settings->get('application')['base_url'];
             $appName = $settings->get('application')['name'];
             $appAuthor = $settings->get('application')['author'];

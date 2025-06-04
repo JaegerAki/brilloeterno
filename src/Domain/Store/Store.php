@@ -4,35 +4,34 @@ declare(strict_types=1);
 
 namespace App\Domain\Store;
 
+use App\Domain\Store\ValueObject\StoreItem;
 use App\Domain\Product\Product;
 use JsonSerializable;
 
-class Store implements JsonSerializable
+class Store implements JsonSerializable, \IteratorAggregate
 {
-    /** @var Product[] */
-    private array $products;
+    /** @var StoreItem[] */
+    private array $storeItems;
 
-    public function __construct(array $products = [])
+    public function __construct(array $storeItems = [])
     {
-        $this->products = $products;
+        $this->storeItems = $storeItems;
     }
-
     /**
-     * @return Product[]
+     * @return StoreItem[]
      */
-    public function getProducts(): array
+    public function getItems(): array
     {
-        return $this->products;
-    }
-
-    public function addProduct(Product $product): void
-    {
-        $this->products[] = $product;
+        return $this->storeItems;
     }
     public function jsonSerialize(): array
     {
         return [
-            'products' => $this->products,
+            'storeItems' => $this->storeItems,
         ];
+    }
+    public function getIterator(): \Traversable
+    {
+        return new \ArrayIterator($this->storeItems);
     }
 }

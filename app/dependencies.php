@@ -9,11 +9,7 @@ use Monolog\Logger;
 use Monolog\Processor\UidProcessor;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use App\Infrastructure\Persistence\Database;
 use Slim\Views\Twig;
-
-use App\Domain\User\UserRepositoryInterface;
-use App\Infrastructure\Persistence\User\UserRepository;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
@@ -64,5 +60,6 @@ return function (ContainerBuilder $containerBuilder) {
             $twig->getEnvironment()->addGlobal('appVersion', $picturePath);
             return $twig;
         },
+        
     ]);
 };

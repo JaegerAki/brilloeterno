@@ -38,11 +38,11 @@
 							{% for item in cart %}
 								<div class="row align-items-center mb-3 gx-2">
 									<div class="col-auto">
-										<img src="{{ item.product.picture is defined and item.product.picture ? picturePath ~ '/' ~ item.product.picture : '' }}" alt="{{ item.product.name }}" width="48" height="48" class="border" style="object-fit:cover;">
+										<img src="{{ item.product.detail.picture is defined and item.product.detail.picture ? picturePath ~ '/' ~ item.product.detail.picture : '' }}" alt="{{ item.product.detail.name }}" width="48" height="48" class="border" style="object-fit:cover;">
 									</div>
 									<div class="col">
-										<div>{{ item.product.name }}</div>
-										{# <a href="{{ basePath }}/cart/remove/{{ item.product.id }}" class="small text-danger">eliminar</a> #}
+										<div>{{ item.product.detail.name }}</div>
+										{# <a href="{{ basePath }}/cart/remove/{{ item.product.detail.id }}" class="small text-danger">eliminar</a> #}
 									</div>
 									<div class="col-2">
 										<a data-id="{{ item.product.id }}" href="#" class="btn btn-decrease btn-outline-secondary btn-sm px-1 py-0 me-0" style="font-size:1.2em; line-height:1; color: black;">-</a>
@@ -51,7 +51,7 @@
 									</div>
 									<div class="col-3">
 										PEN
-										{{ ((item.product.price - item.discount) * item.quantity)|number_format(2, '.', ',') }}
+										{{ ((item.product.detail.price - item.discount) * item.quantity)|number_format(2, '.', ',') }}
 									</div>
 								</div>
 							{% endfor %}

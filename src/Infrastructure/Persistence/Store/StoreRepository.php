@@ -7,6 +7,7 @@ use App\Domain\Store\StoreDetail;
 use App\Domain\Store\ValueObject\StoreItem;
 use App\Domain\Product\Product;
 use App\Domain\Store\StoreRepositoryInterface;
+use App\Domain\Product\ValueObject\ProductDetail;
 use PDO;
 class StoreRepository implements StoreRepositoryInterface
 {
@@ -30,10 +31,12 @@ class StoreRepository implements StoreRepositoryInterface
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $product = new Product(
                 (int) $row['id'],
-                $row['name'],
-                $row['description'],
-                (float) $row['price'],
-                $row['picture']
+                new ProductDetail(
+                    $row['name'],
+                    $row['description'],
+                    (float) $row['price'],
+                    $row['picture']
+                )
             );
             $storeItems[] = new StoreItem($product, 1);
         }
@@ -56,10 +59,12 @@ class StoreRepository implements StoreRepositoryInterface
         if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $product = new Product(
                 (int) $row['id'],
-                $row['name'],
-                $row['description'],
-                (float) $row['price'],
-                $row['picture']
+                new ProductDetail(
+                    $row['name'],
+                    $row['description'],
+                    (float) $row['price'],
+                    $row['picture']
+                )
             );
             return new StoreItem($product, 1);
         }
@@ -82,10 +87,12 @@ class StoreRepository implements StoreRepositoryInterface
         if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $product = new Product(
                 (int) $row['id'],
-                $row['name'],
-                $row['description'],
-                (float) $row['price'],
-                $row['picture']
+                new ProductDetail(
+                    $row['name'],
+                    $row['description'],
+                    (float) $row['price'],
+                    $row['picture']
+                )
             );
             return new StoreDetail(new StoreItem($product, 1));
         }

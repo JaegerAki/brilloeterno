@@ -19,13 +19,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function findAll(): array
     {
-        return $this->products ?? [
-            1 => new Product(1, 'Product 1', 'Description of product 1', 10.0, ''),
-            2 => new Product(2, 'Product 2', 'Description of product 2', 20.0, ''),
-            3 => new Product(3, 'Product 3', 'Description of product 3', 30.0, ''),
-            4 => new Product(4, 'Product 4', 'Description of product 4', 40.0, ''),
-            5 => new Product(5, 'Product 5', 'Description of product 5', 50.0, ''),
-        ];
+        return $this->products ?? [];
     }
     /**
      * {@inheritdoc}
@@ -37,5 +31,7 @@ class ProductRepository implements ProductRepositoryInterface
         }
         return $this->products[$id];
     }
+
+
 }
 ?>

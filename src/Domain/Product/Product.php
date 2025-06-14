@@ -3,48 +3,28 @@ declare(strict_types=1);
 
 namespace App\Domain\Product;
 
+use App\Domain\Product\ValueObject\ProductDetail;
+
 use JsonSerializable;
 
 class Product implements JsonSerializable
 {
     private ?int $id;
-    private string $name;
-    private string $description;
-    private float $price;
-    private string $picture;
+    private ProductDetail $productDetail;
 
-    public function __construct(?int $id, string $name, string $description, float $price, string $picture)
+    public function __construct(?int $id, ProductDetail $productDetail)
     {
         $this->id = $id;
-        $this->name = $name;
-        $this->description = $description;
-        $this->price = $price;
-        $this->picture = $picture;
+        $this->productDetail = $productDetail;
     }
 
     public function getId(): ?int
     {
         return $this->id;
     }
-
-    public function getName(): string
+    public function getDetail(): ProductDetail
     {
-        return $this->name;
-    }
-
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
-
-    public function getPrice(): float
-    {
-        return $this->price;
-    }
-
-    public function getPicture(): string
-    {
-        return $this->picture;
+        return $this->productDetail;
     }
 
     #[\ReturnTypeWillChange]
@@ -52,10 +32,7 @@ class Product implements JsonSerializable
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'description' => $this->description,
-            'price' => $this->price,
-            'picture' => $this->picture,
+            'detail' => $this->productDetail,
         ];
     }
 }

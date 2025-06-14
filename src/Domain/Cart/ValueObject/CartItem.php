@@ -34,7 +34,7 @@ final class CartItem implements JsonSerializable
 
     public function getPrice(): float
     {
-        return $this->product->getPrice() * $this->quantity * (1 - $this->discount);
+        return $this->product->getDetail()->getPrice() * $this->quantity * (1 - $this->discount);
     }
 
 

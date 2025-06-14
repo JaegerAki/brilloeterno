@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace App\Domain\Common\ValueObject;
 
-class Name
+final class Name
 {
     private string $fullname;
     public function __construct(string $fullname)

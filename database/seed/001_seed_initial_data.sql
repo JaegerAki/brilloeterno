@@ -53,14 +53,14 @@ INSERT INTO estado_pedido (nombre, descripcion) VALUES
 -- Insertar datos en cliente
 -- NOTA: Las contraseñas deben ser almacenadas de forma segura (hashed) en una aplicación real.
 -- Aquí se usan placeholders.
-INSERT INTO cliente (nombres, email, contrasena) VALUES
-('Ana Sofía Rojas Vidal', 'ana.rojas@example.com', '123456'),
-('John Michael Doe Smith', 'johndoe@example.com', '123456'),
-('Carlos Alberto Pérez Gómez', 'carlos.perez@example.com', '123456'),
-('Isabelle Dubois Moreau', 'isabelle.dubois@example.com', '123456'),
-('Comercializadora ABC S.A.C.', 'contacto@comercialabc.com', '123456'),
-('Luis Fernando Torres', 'luis.torres@example.com', '123456'),
-('Maria Elena Sánchez', 'maria.sanchez@example.com', '123456');
+INSERT INTO cliente (nombres, email, contrasena,idtipoidentificacion,numero_identificacion) VALUES
+('Ana Sofía Rojas Vidal', 'ana.rojas@example.com', '123456',1, '12345678'),
+('John Michael Doe Smith', 'johndoe@example.com', '123456',1, '22345678'),
+('Carlos Alberto Pérez Gómez', 'carlos.perez@example.com', '123456',1, '32345678'),
+('Isabelle Dubois Moreau', 'isabelle.dubois@example.com', '123456',1, '42345678'),
+('Comercializadora ABC S.A.C.', 'contacto@comercialabc.com', '123456',1, '52345678'),
+('Luis Fernando Torres', 'luis.torres@example.com', '123456',1, '62345678'),
+('Maria Elena Sánchez', 'maria.sanchez@example.com', '123456',1, '72345678');
 
 -- Insertar datos en producto
 INSERT INTO producto (nombre, descripcion, precio, stock, idcategoria, imagen) VALUES
@@ -133,11 +133,13 @@ INSERT INTO rol (nombre) VALUES
 ('Vendedor');
 
 INSERT INTO opcion (nombre, descripcion, ruta) VALUES
-('Usuarios', 'Administrar usuarios del sistema' ,'user'),
-('Productos', 'Administrar productos disponibles', 'product'),
+('Usuarios', 'Administrar usuarios del sistema' ,'users'),
+('Inventario', 'Administrar productos disponibles', 'inventory'),
 ('Pedidos', 'Gestionar pedidos realizados por los clientes', 'order'),
 ('Reportes', 'Generar reportes de ventas y actividad del sistema', 'report'),
-('Configuración', 'Configurar opciones generales del sistema','config');
+('Configuración', 'Configurar opciones generales del sistema','config'),
+('Categorías', 'Administrar categorías de productos', 'categories'),
+('Clientes', 'Administrar información de clientes', 'customers');
 
 INSERT INTO usuario (nombres, email, contrasena, idrol) VALUES
 ('Akira Naganoma', 'naganoma15@gmail.com','123456', 1),
@@ -157,6 +159,14 @@ INSERT INTO rol_opcion (idrol, idopcion, idaccion) VALUES
 (1, 3, 2),
 (1, 3, 3),
 (1, 3, 4),
+(1, 6, 1),
+(1, 6, 2),
+(1, 6, 3),
+(1, 6, 4),
+(1, 7, 1),
+(1, 7, 2),
+(1, 7, 3),
+(1, 7, 4),
 (2, 1, 2),
 (2, 2, 2),
 (2, 3, 2);

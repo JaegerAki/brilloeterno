@@ -1,0 +1,29 @@
+{% extends "Admin/layout.twig" %}
+{% block title %}
+	{{title}}
+{% endblock %}
+{% block content %}
+	<div class="container mt-4 mb-4">
+		<h2>{{title}}</h2>
+		<p>¿Estás seguro de que deseas eliminar el siguiente elemento del inventario?</p>
+		<ul>
+			<li>
+				<strong>ID:</strong>
+				{{ product.id }}</li>
+			<li>
+				<strong>Nombre:</strong>
+				{{ product.productInventoryDetail.name }}</li>
+			<li>
+				<strong>Cantidad:</strong>
+				{{ product.productInventoryDetail.stock }}</li>
+			<li>
+				<strong>Descripción:</strong>
+				{{ product.productInventoryDetail.description }}</li>
+		</ul>
+
+		<form method="post" action="{{basePath}}{{action}}">
+			<button type="submit" class="btn btn-danger">Eliminar</button>
+			<a href="{{basePath}}/inventory" class="btn btn-secondary">Cancelar</a>
+		</form>
+	</div>
+{% endblock %}

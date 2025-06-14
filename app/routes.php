@@ -2,15 +2,8 @@
 
 declare(strict_types=1);
 
-
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
-
-use App\Application\Actions\User\ListUsersAction;
-use App\Application\Actions\User\ViewUserAction;
-use App\Application\Actions\Customer\ListCustomersAction;
 
 use App\Application\Actions\Home\HomeAction;
 
@@ -35,11 +28,23 @@ use App\Application\Middleware\SessionMiddleware;
 
 use App\Application\Actions\Admin\Dashboard\DashboardAction;
 
+use App\Application\Actions\Admin\Inventory\InventoryAction;
+use App\Application\Actions\Admin\Inventory\InventoryReadAction;
+use App\Application\Actions\Admin\Inventory\InventoryCreateAction;
+use App\Application\Actions\Admin\Inventory\InventoryEditAction;
+use App\Application\Actions\Admin\Inventory\InventoryDeleteAction;
+
+use App\Application\Actions\Admin\Users\UserAction as AdminUserAction;
+use App\Application\Actions\Admin\Users\UserReadAction as AdminUserReadAction;
+
+use App\Application\Actions\Admin\Categories\CategoryAction;
+use App\Application\Actions\Admin\Categories\CategoryReadAction;
+use App\Application\Actions\Admin\Categories\CategoryCreateAction;
+use App\Application\Actions\Admin\Categories\CategoryEditAction;
+
+use App\Application\Actions\Admin\Customers\CustomerAction;
+
 return function (App $app) {
-    /*$app->options('/{routes:.*}', function (Request $request, Response $response) {
-        // CORS Pre-Flight OPTIONS Request Handler
-        return $response;
-    });*/
 
     $app->get('/', HomeAction::class);
     $app->get('/about', AboutAction::class);
@@ -68,6 +73,28 @@ return function (App $app) {
             $auth->map(['GET', 'POST'], '/logout', LogoutAction::class);
             $auth->map(['GET', 'POST'], '/change-password', ChangePasswordAction::class);
         });
+        $group->group('/inventory', function (Group $inventory) {
+            $inventory->get('', InventoryAction::class);
+            $inventory->map(['GET', 'POST'], '/create', InventoryCreateAction::class);
+            $inventory->map(['GET', 'POST'], '/delete/{id}', InventoryDeleteAction::class);
+            $inventory->map(['GET', 'POST'], '/edit/{id}', InventoryEditAction::class);
+            $inventory->get('/{id}', InventoryReadAction::class);
+        });
+        $group->group('/users', function (Group $users) {
+            $users->get('', AdminUserAction::class);
+            $users->get('/{id}', AdminUserReadAction::class);
+        });
+        $group->group('/categories', function (Group $categories) {
+            $categories->get('', CategoryAction::class);
+            $categories->map(['GET', 'POST'], '/create', CategoryCreateAction::class);
+            $categories->get('/{id}', CategoryReadAction::class);
+            //$categories->map(['GET', 'POST'], '/create', \App\Application\Actions\Admin\Categories\CategoryCreateAction::class);
+            //$categories->map(['GET', 'POST'], '/edit/{id}', \App\Application\Actions\Admin\Categories\CategoryEditAction::class);
+            //$categories->map(['GET', 'POST'], '/delete/{id}', \App\Application\Actions\Admin\Categories\CategoryDeleteAction::class);
+        });
+        $group->group('/customers', function (Group $customers) {
+            $customers->get('', CustomerAction::class);
+        });
         $group->get('', DashboardAction::class);
         $group->get('/', DashboardAction::class);
 
@@ -79,10 +106,6 @@ return function (App $app) {
             $cart->post('/remove', RemoveCartItemAction::class);
             $cart->post('/increase', IncreaseCartItemAction::class);
             $cart->post('/decrease', DecreaseCartItemAction::class);
-        });
-
-        $group->group('/admin', function (Group $admin) {
-            //$admin->post('', DashboardAction::class);
         });
     })->add(new AuthMiddleware());
 };

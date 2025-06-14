@@ -67,7 +67,6 @@ class UserRepository implements UserRepositoryInterface
     public function save(User $user): void
     {
         if ($user->getId()) {
-            // Update existing user
             $stmt = $this->db->prepare('UPDATE users SET email = :email, nombres = :fullname, last_name = :lastName, email=:email ,password = :password WHERE id = :id');
             $stmt->execute([
                 'fullname' => $user->getPersonalInfo()->getFullname(),
@@ -76,7 +75,6 @@ class UserRepository implements UserRepositoryInterface
                 'id' => $user->getId(),
             ]);
         } else {
-            // Insert new user
             $stmt = $this->db->prepare('INSERT INTO users (email, nombres, last_name,email, password) VALUES (:email, :fullname, :lastName, :password)');
             $stmt->execute([
                 'fullname' => $user->getPersonalInfo()->getFullname(),

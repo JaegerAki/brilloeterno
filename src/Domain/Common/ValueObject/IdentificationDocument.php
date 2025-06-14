@@ -3,8 +3,8 @@ declare(strict_types=1);
 namespace App\Domain\Common\ValueObject;
 use InvalidArgumentException;
 final class IdentificationDocument {
-    private string $type;  // ej: 'DNI', 'RUC', 'PASSPORT'
-    private string $number;
+    public string $type;  // ej: 'DNI', 'RUC', 'PASSPORT'
+    public string $number;
 
     public function __construct(string $type, string $number) {
         if (!in_array($type, ['DNI', 'RUC', 'PASSPORT'])) {

@@ -18,6 +18,7 @@ class DashboardAction
 
     public function __invoke(Request $request, Response $response, array $args = []): Response
     {
+
         // Render the dashboard view
         return $this->twig->render($response, 'admin/dashboard.twig', [
             'title' => 'Admin Dashboard',

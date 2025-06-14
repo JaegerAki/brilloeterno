@@ -1,13 +1,11 @@
 <?php
-
 declare(strict_types=1);
-
 namespace App\Infrastructure\Persistence\Cart;
-
 use App\Domain\Product\Product;
 use App\Domain\Cart\Cart;
 use App\Domain\Cart\ValueObject\CartItem;
 use App\Domain\Cart\CartRepositoryInterface;
+use App\Domain\Product\ValueObject\ProductDetail;
 use PDO;
 
 class CartRepository implements CartRepositoryInterface
@@ -48,10 +46,12 @@ class CartRepository implements CartRepositoryInterface
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $product = new Product(
                 (int) $row['idproducto'],
-                $row['producto'],
-                $row['descripcion'],
-                (float) $row['precio'],
-                $row['imagen']
+                new ProductDetail(
+                    $row['producto'],
+                    $row['descripcion'],
+                    (float) $row['precio'],
+                    $row['imagen']
+                )
             );
             $cartItem = new CartItem($product, (int) $row['cantidad']);
             $cartItems[] = $cartItem;

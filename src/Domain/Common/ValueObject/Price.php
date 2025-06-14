@@ -3,23 +3,18 @@ declare(strict_types=1);
 namespace App\Domain\Common\ValueObject;
 final class Price
 {
-    private float $price;
-
-    public function __construct(float $price)
+    public readonly float $price;
+    public readonly string $currency;
+    public function __construct(float $price, string $currency = 'PEN')
     {
         if ($price < 0) {
             throw new \InvalidArgumentException("Price must be a positive number");
         }
         $this->price = $price;
+        $this->currency = $currency;
     }
-
-    public function getPrice(): float
+    public function __toString(): string
     {
-        return $this->price;
-    }
-
-    public function format(): string
-    {
-        return number_format($this->price, 2, '.', '');
+        return sprintf('%s %.2f', $this->currency, $this->price);
     }
 }

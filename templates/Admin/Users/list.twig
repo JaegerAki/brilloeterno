@@ -1,0 +1,47 @@
+{% extends "Admin/layout.twig" %}
+{% block content %}
+
+	<div class="container mt-4 mb-4">
+		<h2>{{title}}</h2>
+		<p>{{description}}</p>
+		<table id="usersTable" class="table table-striped table-bordered" style="width:100%">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Nombre</th>
+					<th>Email</th>
+					<th>Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for user in users %}
+					<tr>
+						<td>{{ user.id }}</td>
+						<td>{{ user.detail.names }}</td>
+						<td>{{ user.detail.email }}</td>
+						<td hidden>
+							<!-- Ejemplo de acciones -->
+							<a href="/admin/user/edit/{{ user.id }}">Editar</a>
+							<a href="/admin/user/delete/{{ user.id }}">Eliminar</a>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	 <script>
+			            document.addEventListener('DOMContentLoaded', function() {
+					        $('#usersTable').DataTable({
+					            language: {
+					                url: '{{ basePath }}/public/assets/js/es-ES.json'
+					            },
+								searching: false, 
+								search: {
+									"caseInsensitive": true
+								},
+				                pageLength: 5,
+								lengthChange: false,
+					        });
+					    });
+		</script>
+{% endblock %}

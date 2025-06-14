@@ -1,0 +1,27 @@
+{% extends "Admin/layout.twig" %}
+{% block content %}
+<div class="container mt-4 mb-4">
+    <h2>{{title}}</h2>
+    <p>{{description}}</p>
+    <div class="card mb-4">
+        <div class="card-body">
+            <script>
+            console.log("Product Inventory Detail:", {{ product|json_encode|raw }});
+            </script>
+            <h5 class="card-title">{{ product.productInventoryDetail.name }}</h5>
+            {% if product.productInventoryDetail.picture %}
+                <div class="mb-3">
+                    <img src="{{ picturePath }}/{{ product.productInventoryDetail.picture }}" alt="Foto del producto" class="img-fluid" style="max-width:400px;">
+                </div>
+            {% endif %}
+            <p class="card-text"><strong>Código:</strong> {{ product.id }}</p>
+            <p class="card-text"><strong>Categoría:</strong> {{ product.productCategory.name }}</p>
+            <p class="card-text"><strong>Stock Actual:</strong> {{ product.productInventoryDetail.stock }}</p>
+            <p class="card-text"><strong>Precio:</strong> {{ product.productInventoryDetail.price|number_format(2, '.', ',') }}</p>
+            
+        </div>
+    </div>
+    <a href="{{basePath}}/admin/inventory" class="btn btn-secondary">Volver al Inventario</a>
+    <a href="{{basePath}}/api/admin/inventory/edit/{{ product.id }}" class="btn btn-warning">Editar</a>
+</div>
+{% endblock %}

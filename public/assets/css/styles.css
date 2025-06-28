@@ -10,9 +10,9 @@ body {
   min-height: 100vh;
 }
 
-main.container {
-  /*flex: 1 0 auto;*/
-}
+/*main.container {
+  flex: 1 0 auto;
+}*/
 
 .section-initial {
   top: 0;

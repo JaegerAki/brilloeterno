@@ -18,104 +18,113 @@ class CategoryCrudAction
         $this->categoryRepository = $categoryRepository;
     }
 
-    public function __invoke(Request $request, Response $response): Response
+    public function __invoke(Request $request, Response $response, array $args = []): Response
     {
         if ($request->getMethod() === 'POST') {
-            return $this->post($request, $response);
+            return $this->post($request, $response , $args);
         }
-        return $this->get($request, $response);
+        return $this->get($request, $response, $args);
     }
 
-    public function get(Request $request, Response $response): Response
+    public function get(Request $request, Response $response, array $args = []): Response
     {
+        $id = $args['id'] ?? 0;
+        $toSendData = null;
+        if($id>0){
+            $category = $this->categoryRepository->findById((int) $id);
+            if ($category) {
+                // Convertir el objeto Category a un array plano
+                $toSendData = [
+                    'id' => $category->id,
+                    'name' => $category->detail->name,
+                    'description' => $category->detail->description,
+                ];
+            } else {
+                $response->getBody()->write(json_encode([
+                    'success' => false,
+                    'message' => 'Category not found.'
+                ]));
+                return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
+            }
+        }
+        else{
+            $toSendData = $this->categoryRepository->findAll(false);
+        }
         $response->getBody()->write(json_encode([
             'success' => true,
-            'message' => 'Categories retrieved successfully.',
-            'data' => $this->categoryRepository->findAll(false),
+            'message' => 'Consulta exitosa',
+            'data' => $toSendData
         ]));
         return $response->withHeader('Content-Type', 'application/json');
     }
 
-        public function post(Request $request, Response $response): Response
-        {
-            $data = $request->getParsedBody();
-            $operation = $data['operation'] ?? '';
+    public function post(Request $request, Response $response, array $args = []): Response
+    {
+        $data = $request->getParsedBody();
+        $operation = $data['operation'] ?? '';
 
-            switch ($operation) {
-                case 'read':
-                    return $this->read($request, $response, $data);
-                case 'create':
-                    return $this->create($request, $response, $data);
-                case 'update':
-                    return $this->update($request, $response, $data);
-                case 'delete':
-                    return $this->delete($request, $response, $data);
-                default:
-                    $response->getBody()->write(json_encode([
-                        'success' => false,
-                        'message' => 'Invalid operation.'
-                    ]));
-                    return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
-            }
-        }
-
-        private function read(Request $request, Response $response, array $data): Response
-        {
-            // Implement read logic here
-            $response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Read operation not implemented.'
-            ]));
-            return $response->withStatus(501)->withHeader('Content-Type', 'application/json');
-        }
-
-        private function create(Request $request, Response $response, array $data): Response
-        {
-            $name = trim($data['name'] ?? '');
-            $description = trim($data['description'] ?? '');
-
-            if (empty($name) || empty($description)) {
+        switch ($operation) {
+            case 'create':
+                return $this->create($request, $response, $data);
+            case 'update':
+                return $this->update($request, $response, $data);
+            //case 'delete':
+            //return $this->delete($request, $response, $data);
+            default:
                 $response->getBody()->write(json_encode([
                     'success' => false,
-                    'message' => 'Name and description are required.'
+                    'message' => 'Invalid operation.'
                 ]));
                 return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
-            }
-
-            $category = new Category(null, new CategoryDetail(
-                $name,
-                $description
-            ));
-
-            $_id = $this->categoryRepository->save($category);
-
-            $response->getBody()->write(json_encode([
-                'success' => true,
-                'message' => 'Category created successfully.',
-                'category' => [
-                    'id' => $_id,
-                    'name' => $category->detail->name,
-                    'description' => $category->detail->description,
-                ]
-            ]));
-            return $response->withHeader('Content-Type', 'application/json');
         }
+    }
+    private function create(Request $request, Response $response, array $data): Response
+    {
+        $name = trim($data['name'] ?? '');
+        $description = trim($data['description'] ?? '');
 
-        private function update(Request $request, Response $response, array $data): Response
-        {
-            // Implement update logic here
-            $this->categoryRepository->save(new Category(
-                $data['id'],
-                new CategoryDetail(
-                    $data['name'] ?? '',
-                    $data['description'] ?? ''
-                )
-            ));
+        if (empty($name) || empty($description)) {
             $response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Update operation not implemented.'
+                'message' => 'Name and description are required.'
             ]));
-            return $response->withStatus(501)->withHeader('Content-Type', 'application/json');
+            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         }
+
+        $category = new Category(null, new CategoryDetail(
+            $name,
+            $description
+        ));
+
+        $_id = $this->categoryRepository->save($category);
+
+        $response->getBody()->write(json_encode([
+            'success' => true,
+            'message' => 'Category created successfully.',
+            'category' => [
+                'id' => $_id,
+                'name' => $category->detail->name,
+                'description' => $category->detail->description,
+            ]
+        ]));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    private function update(Request $request, Response $response, array $data): Response
+    {
+        // Implement update logic here
+        $this->categoryRepository->save(new Category(
+            $data['id'],
+            new CategoryDetail(
+                $data['name'] ?? '',
+                $data['description'] ?? ''
+            )
+        ));
+        $response->getBody()->write(json_encode([
+            'success' => false,
+            'message' => 'Update operation not implemented.'
+        ]));
+        return $response->withStatus(501)->withHeader('Content-Type', 'application/json');
+    }
 }
 

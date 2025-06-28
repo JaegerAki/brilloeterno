@@ -84,10 +84,8 @@ return function (App $app) {
         });
         $group->group('/categories', function (Group $categories) {
             $categories->get('', CategoryAction::class);
+            $categories->get('/{id}', CategoryAction::class);
             $categories->map(['GET', 'POST'], '/crud', CategoryCrudAction::class);
-            //$categories->map(['GET', 'POST'], '/create', \App\Application\Actions\Admin\Categories\CategoryCreateAction::class);
-            //$categories->map(['GET', 'POST'], '/edit/{id}', \App\Application\Actions\Admin\Categories\CategoryEditAction::class);
-            //$categories->map(['GET', 'POST'], '/delete/{id}', \App\Application\Actions\Admin\Categories\CategoryDeleteAction::class);
         });
         $group->group('/customers', function (Group $customers) {
             $customers->get('', CustomerAction::class);

@@ -41,7 +41,7 @@ class CategoryRepository implements CategoryRepositoryInterface
         );
     }
 
-    public function findAll(): array
+    public function findAll(bool $isObject = true): array
     {
         $stmt = $this->db->query(
             'SELECT 
@@ -51,20 +51,24 @@ class CategoryRepository implements CategoryRepositoryInterface
             FROM categoria c'
         );
         $categories = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $categoryDetail = new CategoryDetail(
-                $row['name'],
-                $row['description']
-            );
-            $categories[] = new Category(
-                (int) $row['id'],
-                $categoryDetail,
-            );
+        if (!$isObject) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $categoryDetail = new CategoryDetail(
+                    $row['name'],
+                    $row['description']
+                );
+                $categories[] = new Category(
+                    (int) $row['id'],
+                    $categoryDetail,
+                );
+            }
         }
         return $categories;
     }
 
-    public function save(Category $category): bool
+    public function save(Category $category): int
     {
         $stmt = $this->db->prepare(
             'INSERT INTO categoria (nombre, descripcion) 
@@ -72,6 +76,27 @@ class CategoryRepository implements CategoryRepositoryInterface
         );
         $stmt->bindParam(':name', $category->detail->name);
         $stmt->bindParam(':description', $category->detail->description);
-        return $stmt->execute();
+        if ($stmt->execute()) {
+            return (int) $this->db->lastInsertId();
+        } else {
+            throw new \RuntimeException('Failed to save category');
+        }
+    }
+
+    public function update(Category $category): int
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE categoria 
+            SET nombre = :name, descripcion = :description 
+            WHERE idcategoria = :id'
+        );
+        $stmt->bindParam(':id', $category->id, PDO::PARAM_INT);
+        $stmt->bindParam(':name', $category->detail->name);
+        $stmt->bindParam(':description', $category->detail->description);
+        if ($stmt->execute()) {
+            return (int) $category->id;
+        } else {
+            throw new \RuntimeException('Failed to update category');
+        }
     }
 }

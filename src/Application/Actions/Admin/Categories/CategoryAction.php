@@ -18,11 +18,10 @@ class CategoryAction{
 
     public function __invoke(Request $request, Response $response, array $args = []): Response
     {
-        $categories = $this->categoryRepository->findAll();
-
+        //$categories = $this->categoryRepository->findAll();
         return $this->twig->render($response, 'admin/categories/list.twig', [
             'title' => 'Categorias',
-            'categories' => $categories,
+            'model' => ['id','nombre','descripcion'],
         ]);
     }
 }

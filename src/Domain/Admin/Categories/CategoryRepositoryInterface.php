@@ -7,6 +7,7 @@ use App\Domain\Admin\Categories\ValueObject\CategoryDetail;
 interface CategoryRepositoryInterface
 {
     public function findById(int $id): ?Category;
-    public function findAll(): array;
-    public function save(Category $category): bool;
+    public function findAll(bool $isObject = true): array;
+    public function save(Category $category): int;
+    public function update(Category $category): int;
 }

@@ -1,47 +1,60 @@
 {% extends "Admin/layout.twig" %}
 {% block content %}
-
 	<div class="container mt-4 mb-4">
 		<h2>{{title}}</h2>
 		<p>{{description}}</p>
-		<a href="{{ basePath }}/admin/categories/create" class="btn btn-primary mb-3">Nuevo</a>
+		<a class="btn btn-primary mb-3" data-bs-action="new" data-bs-toggle="modal" data-bs-target="#modalCategoria">Nueva Categoría</a>
 		<table id="categoriesTable" class="table table-striped table-bordered" style="width:100%">
-			<thead>
-				<tr>
-					<th>ID</th>
-					<th>Nombre</th>
-					<th>Categoría</th>
-					<th>Acciones</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for item in categories %}
-					<tr>
-
-						<td>{{ item.id }}</td>
-						<td>{{ item.detail.name }}</td>
-						<td>{{ item.detail.description }}</td>
-						<td>
-							<a href="{{basePath}}/admin/categories/{{ item.id }}" class="btn btn-sm btn-info">Ver</a>
-						</td>
-					</tr>
-				{% endfor %}
-			</tbody>
 		</table>
 	</div>
+	{% include "Admin/Categories/_modal_form.twig" with {
+		modal_title: 'Editar Categoría',
+		category: item,
+		readonly: false
+	} %}
 	 <script>
-			    document.addEventListener('DOMContentLoaded', function() {
-			        $('#categoriesTable').DataTable({
-			            language: {
-			                url: '{{ basePath }}/public/assets/js/es-ES.json'
-			            },
-						searching: false, // Habilitar la búsqueda
-						search: {
-							"caseInsensitive": true // Búsqueda sin distinción entre mayúsculas y minúsculas
-						},
-		                pageLength: 5,
-						lengthChange: false,
-			        });
-			    });
-			</script>
+		document.addEventListener('DOMContentLoaded', function() {
+
+			createDatatableWithAjax('#categoriesTable','{{basePath}}/admin/categories/crud',['edit'])
+			
+			handleAjaxFormSubmit('#modalCategoria form', function(data) {
+				table = $('#categoriesTable').DataTable();
+				table.ajax.reload(null, false);// false = mantener paginación actual
+				/*table.row.add([
+					data.category.id,
+					data.category.name,
+					data.category.description,
+					`<a href="{{basePath}}/admin/categories/${data.category.id}" class="btn btn-sm btn-info">Ver</a>`
+				]).draw(false);*/
+			});
+
+			$('a[data-bs-action="new"]').on('click', function() {
+				console.log('New action clicked');
+				$('#modalCategoria').find('form')[0].reset();
+				$('#modalCategoria').find('#operation').val('create');
+				$('#modalCategoria .modal-title').text('Nueva Categoría');
+				//mostrar el modal
+				$('#modalCategoria').modal('show');
+			});
+
+			//<a class="btn btn-sm btn-info" data-bs-action="edit">Editar</a>
+
+			$('a[data-bs-action="edit"]').on('click', function() {
+				console.log('Edit action clicked');
+				$('#modalCategoria').find('form')[0].reset();
+				let row = $(this).closest('tr');
+				let id = row.find('td:first').text();
+				let name = row.find('td:nth-child(2)').text();
+				let description = row.find('td:nth-child(3)').text();
+				
+				$('#modalCategoria').find('#id').val(id);
+				$('#modalCategoria').find('#operation').val('edit');
+				$('#modalCategoria').find('#name').val(name);
+				$('#modalCategoria').find('#description').val(description);
+				$('#modalCategoria .modal-title').text('Editar Categoría');
+
+				$('#modalCategoria').modal('show');
+			});
+		});
+	</script>
 {% endblock %}

@@ -8,91 +8,264 @@
 		</title>
 		<link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 		<link rel="stylesheet" href="{{basePath}}\public\assets\css\custom.css">
-        <link rel="stylesheet" href="{{basePath}}\public\assets\css\styles.css">
+		<link rel="stylesheet" href="{{basePath}}\public\assets\css\styles.css">
 		<link href="https://cdn.datatables.net/v/dt/jszip-3.10.1/dt-2.3.2/b-3.2.3/b-colvis-3.2.3/b-html5-3.2.3/b-print-3.2.3/r-3.0.4/datatables.min.css" rel="stylesheet" integrity="sha384-Uih/K/Uil6Rus8l+PLDmE3bb4MDKCk8tU9+YORDUzpn1jE0EUge4uNFYXM4Hj8TG" crossorigin="anonymous">
-        <style>
-            body {
-                margin: 0;
-            }
-            .page-wrapper {
-                display: flex;
-                flex: 1 1 auto;
-                /*min-height: 0;*/
-            }
-            aside {
-                width: 220px;
-                background: #23272b;
-                color: #ffffff;
-                padding: 20px 0;
-                height: auto;
-                flex-shrink: 0;
-                display: flex;
-                flex-direction: column;
-            }
-            main .container {
-                flex: 1 1 auto;
-            }
-        </style>
+		<style>
+			body {
+				margin: 0;
+			}
+			.page-wrapper {
+				display: flex;
+				flex: 1 1 auto;
+				/*min-height: 0;*/
+			}
+			aside {
+				width: 220px;
+				background: #23272b;
+				color: #ffffff;
+				padding: 20px 0;
+				height: auto;
+				flex-shrink: 0;
+				display: flex;
+				flex-direction: column;
+			}
+			main .container {
+				flex: 1 1 auto;
+			}
+		</style>
 	</head>
 	<body>
 		<header>
 			<nav class="navbar">
 				<div class="navbar-brand d-flex align-items-center">
-                    <a href="{{basePath}}/admin"><img src="{{basePath}}\public\assets\img\logo_blanco.png" alt="{{appName}}" height="50" class="d-inline-block align-text-top"></a>
-                    <a class = "mx-2" href="{{basePath}}/admin">Administrador</a>
+					<a href="{{basePath}}/admin"><img src="{{basePath}}\public\assets\img\logo_blanco.png" alt="{{appName}}" height="50" class="d-inline-block align-text-top"></a>
+					<a class="mx-2" href="{{basePath}}/admin">Administrador</a>
 				</div>
 			</nav>
 		</header>
-        <div class="page-wrapper">
-        {% block aside %}
-            {% include "Admin/aside.twig" %}
-        {% endblock %}
-		<main class="container">
-            {% block content %}{% endblock %}
-		</main>
-        </div>
-        <!---<footer>
-            <p>&copy;
-                {{ "now"|date("Y") }}
-                {{appName}}. Todos los derechos reservados. Autor
-                {{appAuthor}}
-            </p>
-        </footer>-->
-	</body>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-	<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js" ></script>
-	<script src="https://cdn.datatables.net/v/dt/jszip-3.10.1/dt-2.3.2/b-3.2.3/b-colvis-3.2.3/b-html5-3.2.3/b-print-3.2.3/r-3.0.4/datatables.min.js"></script>
-    <script>
-	$(document).ready(function() {
-		$('.button .query').on('click', function(e) {
-			e.preventDefault();
-			let route = $(this).data('id');
-			let url = '{{ basePath }}/api/admin/'+route;
-			let type = $(this).data('type') || 'GET';
-			$.ajax({
-				url: url,
-				type: 'POST',
-				dataType: 'json',
-				success: function(res) {
-					/*//obtener id #main-content borrar contenido actual
-					$('#main-content').empty();
-					//agregar contenido de la respuesta
-					$('#main-content').html(res.content);*/
-				},
-				error: function(res) {
-					Swal.fire({
-						title: 'Error',
-						text: 'No se pudo obtener los datos del administrador.',
-						icon: 'error',
-						confirmButtonText: 'Cerrar'
-					});
-				}
-			});
-		});
-	});
-</script>
-</html>
+		<div class="page-wrapper">
+			{% block aside %}
+				{% include "Admin/aside.twig" %}
+			{% endblock %}
+			<main class="container"> {% block content %}{% endblock %}
+				</main>
+			</div>
+			<!---<footer>
+									            <p>&copy;
+									                {{ "now"|date("Y") }}
+									                {{appName}}. Todos los derechos reservados. Autor
+									                {{appAuthor}}
+									            </p>
+									        </footer>-->
+		</body>
+		 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+		 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+		 <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
+		 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+		 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js" ></script>
+		 <script src="https://cdn.datatables.net/v/dt/jszip-3.10.1/dt-2.3.2/b-3.2.3/b-colvis-3.2.3/b-html5-3.2.3/b-print-3.2.3/r-3.0.4/datatables.min.js"></script>
+		 <script>
+							$(document).ready(function() {
+								$('.button .query').on('click', function(e) {
+									e.preventDefault();
+									let route = $(this).data('id');
+									let url = '{{ basePath }}/api/admin/'+route;
+									let type = $(this).data('type') || 'GET';
+									$.ajax({
+										url: url,
+										type: 'POST',
+										dataType: 'json',
+										success: function(res) {
+											/*//obtener id #main-content borrar contenido actual
+											$('#main-content').empty();
+											//agregar contenido de la respuesta
+											$('#main-content').html(res.content);*/
+										},
+										error: function(res) {
+											Swal.fire({
+												title: 'Error',
+												text: 'No se pudo obtener los datos del administrador.',
+												icon: 'error',
+												confirmButtonText: 'Cerrar'
+											});
+										}
+									});
+								});
+							});
+						
+							function showAlert(message, type = 'info') {
+								Swal.fire({
+									icon: type,
+									title: message,
+									showConfirmButton: true,
+									timer: 3000
+								});
+							}
+						
+							function showToast(message, type = 'info') {
+								const Toast = Swal.mixin({
+									toast: true,
+									position: 'top-end',
+									showConfirmButton: false,
+									timer: 3000,
+									timerProgressBar: true,
+									didOpen: (toast) => {
+										toast.onmouseenter = Swal.stopTimer;
+										toast.onmouseleave = Swal.resumeTimer;
+									}
+								});
+								Toast.fire({
+									icon: type,
+									title: message
+								});
+							}
+						
+							function showConfirm(message, callback) {
+								Swal.fire({
+									title: 'Confirmar',
+									text: message,
+									icon: 'warning',
+									showCancelButton: true,
+									confirmButtonText: 'Sí',
+									cancelButtonText: 'No'
+								}).then((result) => {
+									if (result.isConfirmed) {
+										callback();
+									}
+								});
+							}
+						
+							function createDatatable(selector, options = {}) {
+								const defaultOptions = {
+									language: {
+										url: '{{ basePath }}/public/assets/js/es-ES.json'
+									},
+									searching: false,
+									search: { "caseInsensitive": true },
+									pageLength: 5,
+									lengthChange: false,
+									order: [[0, 'desc']]  // Descomentar si se quiere ordenar por la primera columna de manera descendente
+									//ordenar de manera descendente por la primera columna
+								};
+								const dtOptions = $.extend(true, {}, defaultOptions, options);
+								return $(selector).DataTable(dtOptions);
+							}
+						
+							function createDatatableWithAjax(selector, ajaxUrl, options =['edit','view','delete']) {
+								$.ajax({
+									url: ajaxUrl,
+									method: 'GET',
+									dataType: 'json',
+									success: function (res) {
+										data = res.data;
+										const columnas = Object.keys(data[0]).map(key => ({
+										title: key.charAt(0).toUpperCase() + key.slice(1),
+										data: key
+										}));
+										
+										columnas.push({
+											data: null,
+											orderable: false,
+											searchable: false,
+											render: function(data, type, row) {
+												let actions = '';
+												if (options.includes('view')) {
+													actions += `<a class="btn btn-sm btn-primary" data-bs-action="view">Ver</a> `;
+												}
+												if (options.includes('edit')) {
+													actions += `<a class="btn btn-sm btn-info" data-bs-action="edit">Editar2</a> `;
+												}
+												if (options.includes('delete')) {
+													actions += `<a class="btn btn-sm btn-danger" data-bs-action="delete">Eliminar</a>`;
+												}
+												return actions;
+											}
+										});
+										const defaultOptions = {
+											data: data,
+											ajax: {
+												type: 'GET',
+												url: ajaxUrl,
+												dataSrc: 'data'
+											},
+											columns: columnas,
+											language: {
+												url: '{{ basePath }}/public/assets/js/es-ES.json'
+											},
+											searching: false,
+											search: { "caseInsensitive": true },
+											pageLength: 5,
+											order: [[0, 'desc']],
+											lengthChange: false,
+											/*dom: 'Bfrtip',
+											buttons: [
+												{
+												text: '🔄 Actualizar',
+												action: function (e, dt, node, config) {
+													dt.ajax.reload(null, false);
+												}
+												}
+											],*/
+											}
+										return $(selector).DataTable(defaultOptions)
+									},
+									error: function (xhr, status, error) {
+										showAlert('Error al cargar los datos', 'error');
+									}
+								});
+							}
+						
+						
+							function handleAjaxFormSubmit(formSelector, onSuccess=null, onError=null) {
+								$(formSelector).on('submit', function(e) {
+									e.preventDefault();
+						
+									var form = this;
+									var formData = new FormData(form);
+						
+									showConfirm('¿Está seguro de que desea continuar?', function() {
+										$.ajax({
+											url: $(form).attr('action'),
+											type: 'POST',
+											data: formData,
+											processData: false,
+											contentType: false,
+											dataType: 'json',
+											success: function(data) {
+												try{
+													if (data.success) {
+														// Cierra el modal si existe
+														var modalEl = $(form).closest('.modal')[0];
+														if (modalEl) {
+															var modal = bootstrap.Modal.getInstance(modalEl);
+															if (modal) modal.hide();
+														}
+														form.reset();
+														if (typeof onSuccess === 'function') {
+															onSuccess(data);
+														}
+														showToast('Operación exitosa', 'success');
+													} else {
+														showAlert('Error: ' + (data.message || 'Error desconocido'), 'error');
+													}
+												}catch (e) {
+													console.error('Error processing response:', e);
+													showAlert('Error procesando la respuesta', 'error');
+												}
+						
+											},
+											error: function(e) {
+												let r = e.responseJSON || {};
+												if (typeof onError === 'function') {
+													onError(r, form);
+												}
+												showAlert('Error: ' + (r.message || 'Error desconocido'), 'error');
+											}
+										});
+									});
+								});
+							}
+							</script>{% block scripts %}
+	{% endblock %}
+</html></script></html>

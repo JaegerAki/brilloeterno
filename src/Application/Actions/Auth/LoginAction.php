@@ -31,7 +31,6 @@ class LoginAction
 
             $customer = $this->customerRepository->findByEmail($username);
 
-            //if (!$customer || !password_verify($password, $customer->getPasswordHash())) {
             if (!$customer || $customer->getPasswordHash() !== $password) {
                 $error = 'Correo o contraseña incorrectos';
             } else {
@@ -39,19 +38,12 @@ class LoginAction
                 $_SESSION['user_name'] = $customer->getFullname();
                 $_SESSION['user_email'] = $customer->getEmail();
 
-                //$_SESSION['flash_message']? $_SESSION['flash_message']:'Bienvenido ' . $customer->getFullname() . '.';
-
                 $baseUrl = $this->twig->getEnvironment()->getGlobals()['basePath'] ?? '/brilloeterno';
-                // Redirect to the home
                 return $response
                     ->withHeader('Location', $baseUrl . '/')
                     ->withStatus(302);
-                /*return $this->twig->render($response, 'home.twig', [
-                    'user' => $customer,
-                ]);*/
             }
         }
-
         return $this->twig->render($response, 'auth/login.twig', [
             'error' => $error,
         ]);

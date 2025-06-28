@@ -11,7 +11,7 @@ body {
 }
 
 main.container {
-  flex: 1 0 auto;
+  /*flex: 1 0 auto;*/
 }
 
 .section-initial {
@@ -78,6 +78,7 @@ h1 {
 
 nav {
   background-color: rgba(0, 0, 0, 0);
+  width: 100%;
 }
 
 footer {

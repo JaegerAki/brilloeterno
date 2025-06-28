@@ -38,9 +38,7 @@ use App\Application\Actions\Admin\Users\UserAction as AdminUserAction;
 use App\Application\Actions\Admin\Users\UserReadAction as AdminUserReadAction;
 
 use App\Application\Actions\Admin\Categories\CategoryAction;
-use App\Application\Actions\Admin\Categories\CategoryReadAction;
-use App\Application\Actions\Admin\Categories\CategoryCreateAction;
-use App\Application\Actions\Admin\Categories\CategoryEditAction;
+use App\Application\Actions\Admin\Categories\CategoryCrudAction;
 
 use App\Application\Actions\Admin\Customers\CustomerAction;
 
@@ -86,8 +84,7 @@ return function (App $app) {
         });
         $group->group('/categories', function (Group $categories) {
             $categories->get('', CategoryAction::class);
-            $categories->map(['GET', 'POST'], '/create', CategoryCreateAction::class);
-            $categories->get('/{id}', CategoryReadAction::class);
+            $categories->map(['GET', 'POST'], '/crud', CategoryCrudAction::class);
             //$categories->map(['GET', 'POST'], '/create', \App\Application\Actions\Admin\Categories\CategoryCreateAction::class);
             //$categories->map(['GET', 'POST'], '/edit/{id}', \App\Application\Actions\Admin\Categories\CategoryEditAction::class);
             //$categories->map(['GET', 'POST'], '/delete/{id}', \App\Application\Actions\Admin\Categories\CategoryDeleteAction::class);

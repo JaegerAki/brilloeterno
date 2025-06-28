@@ -1,9 +1,9 @@
 {% extends "Admin/layout.twig" %}
 {% block content %}
-
 	<div class="container mt-4 mb-4">
 		<h2>{{title}}</h2>
 		<p>{{description}}</p>
+		<a class="btn btn-primary mb-3" data-action='new' data-bs-toggle="modal" data-bs-target="#modalUsuario">Nuevo Usuario</a>
 		<table id="usersTable" class="table table-striped table-bordered" style="width:100%">
 			<thead>
 				<tr>
@@ -20,28 +20,29 @@
 						<td>{{ user.detail.names }}</td>
 						<td>{{ user.detail.email }}</td>
 						<td hidden>
-							<!-- Ejemplo de acciones -->
-							<a href="/admin/user/edit/{{ user.id }}">Editar</a>
-							<a href="/admin/user/delete/{{ user.id }}">Eliminar</a>
+							<a data-action='edit'>Editar</a>
+							<a data-action='delete'>Eliminar</a>
 						</td>
 					</tr>
 				{% endfor %}
 			</tbody>
 		</table>
 	</div>
+	{% include "Admin/Users/_modal_form.twig" %}
 	 <script>
-			            document.addEventListener('DOMContentLoaded', function() {
-					        $('#usersTable').DataTable({
-					            language: {
-					                url: '{{ basePath }}/public/assets/js/es-ES.json'
-					            },
-								searching: false, 
-								search: {
-									"caseInsensitive": true
-								},
-				                pageLength: 5,
-								lengthChange: false,
-					        });
-					    });
-		</script>
+		document.addEventListener('DOMContentLoaded', function() {
+			createDatatable('#usersTable');
+
+			
+			handleAjaxFormSubmit('#modalUsuario form', function(data) {
+				table = $('#usersTable').DataTable();
+				table.row.add([
+					data.user.id,
+					data.user.detail.names,
+					data.user.detail.email,
+					`<a href="{{basePath}}/admin/user/edit/${data.user.id}" class="btn btn-sm btn-info">Desactivar</a>`
+				]).draw(false);
+			});
+		});
+	</script>
 {% endblock %}

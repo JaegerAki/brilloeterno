@@ -7,11 +7,7 @@
 		<table id="categoriesTable" class="table table-striped table-bordered" style="width:100%">
 		</table>
 	</div>
-	{% include "Admin/Categories/_modal_form.twig" with {
-		modal_title: 'Editar Categoría',
-		category: item,
-		readonly: false
-	} %}
+	{% include "Admin/_modal_form.twig" %}
 	 <script>
 			document.addEventListener('DOMContentLoaded', function() {
 				const urlCategories = '{{basePath}}/admin/categories/crud';
@@ -23,30 +19,30 @@
 				});
 
 				$(document).on('click', 'a[data-bs-action="view"]', function() {
-					let operation = $(this).data('bs-action');
 					let row = $(this).closest('tr');
 					let id = row.find('td:first').text();
 	
 					let data = retrieveDataById(id, urlCategories);
-					createFormModal(data,operation,urlCategories)
-					
+					createFormModal(data,'GET',urlCategories)
 					$('#modalForm').modal('show');
 				});
 	
 				$(document).on('click', 'a[data-bs-action="new"]', function() {
-					let operation = $(this).data('bs-action');
 					let data = retrieveDataById(0, urlCategories);
-					createFormModal(data,operation,urlCategories);
+					createFormModal(data,'POST',urlCategories);
 					$('#modalForm').modal('show');
 				});
 	
 				$(document).on('click', 'a[data-bs-action="edit"]', function() {
-					let operation = $(this).data('bs-action');
+					//otra forma de obtener el id de la fila?
+					let tid = $(this).data('id');
+					console.log('tid: ', tid);
+					
 					let row = $(this).closest('tr');
 					let id = row.find('td:first').text();
+					
 					let data = retrieveDataById(id, urlCategories);
-					createFormModal(data,operation,urlCategories)
-
+					createFormModal(data,'PATCH',urlCategories)
 					$('#modalForm').modal('show');
 				});
 			});

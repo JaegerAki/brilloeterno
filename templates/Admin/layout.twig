@@ -182,6 +182,8 @@
 								return actions;
 							}
 						});
+						/*
+						*/
 						const defaultOptions = {
 							//data: data,
 							ajax: {
@@ -198,6 +200,7 @@
 							pageLength: 5,
 							order: [[0, 'desc']],
 							lengthChange: false,
+							select: true
 							/*dom: 'Bfrtip',
 							buttons: [
 								{
@@ -250,7 +253,7 @@
 				});
 			}
 
-			function createFormModal(data, operation, action, modalForm="#modalForm") {
+			function createFormModal(data, method, action, modalForm="#modalForm") {
 				//dentro de <form> debera ir el modal-header, modal-body y modal-footer </form>
 				// dentro de modal-header debera el titulo del modal y el boton de cerrar
 				// y dentro de modal-body debera los formularios
@@ -260,34 +263,34 @@
 				let form = modal.find('form');
 				form.html(''); // Limpiar el contenido del formulario existente
 				if (form.length === 0) {
-					form = $('<form></form>').attr('method', 'post').attr('action', action);
+					form = $('<form></form>').attr('method', method).attr('action', action);
 					modal.append(form);
 				} else {
-					form.attr('action', action);
+					form.attr('method',method).attr('action', action);
 					form.empty(); // Limpiar el formulario existente
 				}
-
-				form.append('<input type="hidden" name="operation" id="operation" value="' + operation + '">');
 				form.append('<input type="hidden" name="id" id="id" value="' + (data.id || '') + '">');
-				
 				let modalContent = $('<div class="modal-content"></div>');
 				let modalHeader = $('<div class="modal-header"></div>');
 				let title = '';
-				if (operation === 'new') {
-					title = 'Nuevo Registro';
-				} else if (operation === 'view') {
-					title = 'Ver Registro';
-				} else if (operation === 'edit') {
-					title = 'Editar Registro';
-				} else if (operation === 'delete') {
-					title = 'Eliminar Registro';
+				if (method === 'GET') {
+					title = 'Ver';
+				} else 
+				if (method === 'PATCH') {
+					title = 'Editar';
+				} else 
+				if (method === 'DELETE') {
+					title = 'Eliminar';
+				}
+				else {
+					title = 'Nuevo';
 				}
 				modalHeader.append('<h5 class="modal-title">' + title + '</h5>');
 				modalHeader.append('<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>');
 				modalContent.append(modalHeader);
 
 				let modalBody = $('<div class="modal-body"></div>');
-				if (operation === 'delete') {
+				if (method === 'DELETE') {
 					modalBody.append('<p>¿Está seguro de que desea eliminar este registro?</p>');
 				} else {
 					for (let key in data) {
@@ -297,7 +300,7 @@
 							let label = $('<label class="form-label"></label>').attr('for',key).text(key.charAt(0).toUpperCase() + key.slice(1));
 							let input = $('<input type="text" class="form-control">').attr('name', key).attr('id', key).val(data[key]);
 							input.prop('required', true);
-							if (operation === 'view') {
+							if (method === 'GET' || method === 'DELETE') {
 								input.prop('readonly', true);
 							}
 							field.append(label).append(input);
@@ -308,23 +311,22 @@
 				modalContent.append(modalBody);
 
 				let modalFooter = $('<div class="modal-footer"></div>');
-				if(operation === 'new'){
-					modalFooter.append('<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>');
-					modalFooter.append('<button type="submit" class="btn btn-primary">Guardar</button>');
-				}else
-				if (operation === 'view') {
+				if (method === 'GET') {
 					modalFooter.append('<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>');
 				} else 
-				if (operation === 'edit') {
+				if (method === 'PATCH') {
 					modalFooter.append('<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>');
 					modalFooter.append('<button type="submit" class="btn btn-primary">Guardar</button>');
 				} else 
-				if (operation === 'delete') {
+				if (method === 'DELETE') {
 					modalFooter.append('<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>');
 					modalFooter.append('<button type="submit" class="btn btn-danger">Eliminar</button>');
 				}
+				else {
+					modalFooter.append('<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>');
+					modalFooter.append('<button type="submit" class="btn btn-primary">Guardar</button>');
+				}
 				modalContent.append(modalFooter);
-
 				form.append(modalContent);
 				return modal;
 			}
@@ -334,16 +336,38 @@
 					e.preventDefault();
 		
 					var form = this;
-					var formData = new FormData(form);
-		
-					showConfirm('¿Está seguro de que desea continuar?', function() {
-						$.ajax({
+					var method = $(form).attr('method').toUpperCase();
+					var formData, ajaxSettings;
+					
+					// Para PATCH, enviar como JSON; para POST, usar FormData
+					if (method === 'PATCH') {
+						var formDataObj = {};
+						$(form).serializeArray().forEach(function(item) {
+							formDataObj[item.name] = item.value;
+						});
+						
+						ajaxSettings = {
 							url: $(form).attr('action'),
-							type: 'POST',
+							type: method,
+							data: JSON.stringify(formDataObj),
+							contentType: 'application/json',
+							dataType: 'json'
+						};
+					} else {
+						formData = new FormData(form);
+						ajaxSettings = {
+							url: $(form).attr('action'),
+							type: method,
 							data: formData,
 							processData: false,
 							contentType: false,
-							dataType: 'json',
+							dataType: 'json'
+						};
+					}
+		
+					showConfirm('¿Está seguro de que desea continuar?', function() {
+						$.ajax({
+							...ajaxSettings,
 							success: function(data) {
 								try{
 									if (data.success) {

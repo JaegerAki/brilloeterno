@@ -15,31 +15,6 @@ class CategoryRepository implements CategoryRepositoryInterface
         $this->db = $db;
     }
 
-    public function findById(int $id): ?Category
-    {
-        $stmt = $this->db->prepare(
-            'SELECT 
-                c.idcategoria AS id,
-                c.nombre AS name,
-                c.descripcion AS description
-            FROM categoria c
-            WHERE c.idcategoria = :id'
-        );
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$row) {
-            return null;
-        }
-        $categoryDetail = new CategoryDetail(
-            $row['name'],
-            $row['description']
-        );
-        return new Category(
-            (int) $row['id'],
-            $categoryDetail,
-        );
-    }
 
     public function findAll(bool $isObject = true): array
     {
@@ -68,7 +43,34 @@ class CategoryRepository implements CategoryRepositoryInterface
         return $categories;
     }
 
-    public function save(Category $category): int
+    public function get(int $id): ?Category
+    {
+        $stmt = $this->db->prepare(
+            'SELECT 
+                c.idcategoria AS id,
+                c.nombre AS name,
+                c.descripcion AS description
+            FROM categoria c
+            WHERE c.idcategoria = :id'
+        );
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) {
+            return null;
+        }
+        $categoryDetail = new CategoryDetail(
+            $row['name'],
+            $row['description']
+        );
+        return new Category(
+            (int) $row['id'],
+            $categoryDetail,
+        );
+    }
+
+
+    public function insert(Category $category): int
     {
         $stmt = $this->db->prepare(
             'INSERT INTO categoria (nombre, descripcion) 

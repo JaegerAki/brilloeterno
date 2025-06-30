@@ -86,7 +86,7 @@ return function (App $app) {
         
         $group->group('/categories', function (Group $categories) {
             $categories->get('', CategoryAction::class);
-            $categories->map(['GET', 'POST'], '/crud', CategoryCrudAction::class);
+            $categories->map(['GET', 'POST','PATCH','DELETE'], '/crud', CategoryCrudAction::class);
             $categories->map(['GET'], '/crud/{id}', CategoryCrudAction::class);
         });
         $group->group('/customers', function (Group $customers) {

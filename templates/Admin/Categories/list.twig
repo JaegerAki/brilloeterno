@@ -3,7 +3,7 @@
 	<div class="container mt-4 mb-4">
 		<h2>{{title}}</h2>
 		<p>{{description}}</p>
-		<a class="btn btn-primary mb-3" data-bs-action="new" data-bs-toggle="modal" data-bs-target="#modalCategoria">Nueva Categoría</a>
+		<a class="btn btn-primary mb-3" data-bs-action="new">Nueva Categoría</a>
 		<table id="categoriesTable" class="table table-striped table-bordered" style="width:100%">
 		</table>
 	</div>
@@ -12,47 +12,43 @@
 		category: item,
 		readonly: false
 	} %}
-	<script>
-		document.addEventListener('DOMContentLoaded', function() {
-
-			createDatatableWithAjax('#categoriesTable','{{basePath}}/admin/categories/crud',['read','edit'])
-			
-			handleAjaxFormSubmit('#modalCategoria form', function(data) {
-				table = $('#categoriesTable').DataTable();
-				table.ajax.reload(null, false);// false = mantener paginación actual
-			});
-			
-			$(document).on('click', 'a[data-bs-action="read"]', function() {
-				console.log('Read action clicked');
-				let row = $(this).closest('tr');
-				let id = row.find('td:first').text();
-				let id = row.find('td:')
-			});
-
-			$(document).on('click', 'a[data-bs-action="new"]', function() {
-				console.log('New action clicked');
-				$('#modalCategoria').find('form')[0].reset();
-				$('#modalCategoria').find('#operation').val('create');
-				$('#modalCategoria .modal-title').text('Nueva Categoría');
-				$('#modalCategoria').modal('show');
-			});
-
-			$(document).on('click', 'a[data-bs-action="edit"]', function() {
-				console.log('Edit action clicked');
-				$('#modalCategoria').find('form')[0].reset();
-				let row = $(this).closest('tr');
-				let id = row.find('td:first').text();
-				let name = row.find('td:nth-child(2)').text();
-				let description = row.find('td:nth-child(3)').text();
+	 <script>
+			document.addEventListener('DOMContentLoaded', function() {
+				const urlCategories = '{{basePath}}/admin/categories/crud';
+				createDatatableWithAjax('#categoriesTable',urlCategories,['view','edit'])
 				
-				$('#modalCategoria').find('#id').val(id);
-				$('#modalCategoria').find('#operation').val('edit');
-				$('#modalCategoria').find('#name').val(name);
-				$('#modalCategoria').find('#description').val(description);
-				$('#modalCategoria .modal-title').text('Editar Categoría');
+				handleAjaxFormSubmit('#modalForm form', function(data) {
+					table = $('#categoriesTable').DataTable();
+					table.ajax.reload(null, false);// false = mantener paginación actual
+				});
 
-				$('#modalCategoria').modal('show');
+				$(document).on('click', 'a[data-bs-action="view"]', function() {
+					let operation = $(this).data('bs-action');
+					let row = $(this).closest('tr');
+					let id = row.find('td:first').text();
+	
+					let data = retrieveDataById(id, urlCategories);
+					createFormModal(data,operation,urlCategories)
+					
+					$('#modalForm').modal('show');
+				});
+	
+				$(document).on('click', 'a[data-bs-action="new"]', function() {
+					let operation = $(this).data('bs-action');
+					let data = retrieveDataById(0, urlCategories);
+					createFormModal(data,operation,urlCategories);
+					$('#modalForm').modal('show');
+				});
+	
+				$(document).on('click', 'a[data-bs-action="edit"]', function() {
+					let operation = $(this).data('bs-action');
+					let row = $(this).closest('tr');
+					let id = row.find('td:first').text();
+					let data = retrieveDataById(id, urlCategories);
+					createFormModal(data,operation,urlCategories)
+
+					$('#modalForm').modal('show');
+				});
 			});
-		});
-	</script>
+		</script>
 {% endblock %}

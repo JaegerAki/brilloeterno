@@ -171,7 +171,7 @@
 							render: function(data, type, row) {
 								let actions = '';
 								if (options.includes('view')) {
-									actions += `<a class="btn btn-sm btn-secondary" data-bs-action="view">🔍 Ver</a> `;
+									actions += `<a class="btn btn-sm btn-secondary" data-bs-action="view">🔍</a> `;
 								}
 								if (options.includes('edit')) {
 									actions += `<a class="btn btn-sm btn-secondary" data-bs-action="edit">✏️</a> `;
@@ -183,7 +183,7 @@
 							}
 						});
 						const defaultOptions = {
-							data: data,
+							//data: data,
 							ajax: {
 								type: 'GET',
 								url: ajaxUrl,
@@ -198,8 +198,8 @@
 							pageLength: 5,
 							order: [[0, 'desc']],
 							lengthChange: false,
-							dom: 'Bfrtip',
-							/*buttons: [
+							/*dom: 'Bfrtip',
+							buttons: [
 								{
 								text: '🔄 Actualizar',
 								action: function (e, dt, node, config) {
@@ -248,6 +248,85 @@
 						window.location.href = `{{basePath}}/admin/categories/${id}`;
 					}
 				});
+			}
+
+			function createFormModal(data, operation, action, modalForm="#modalForm") {
+				//dentro de <form> debera ir el modal-header, modal-body y modal-footer </form>
+				// dentro de modal-header debera el titulo del modal y el boton de cerrar
+				// y dentro de modal-body debera los formularios
+				// y dentro de modal-footer debera los botones de cerrar y submit
+				
+				let modal = $(modalForm);
+				let form = modal.find('form');
+				form.html(''); // Limpiar el contenido del formulario existente
+				if (form.length === 0) {
+					form = $('<form></form>').attr('method', 'post').attr('action', action);
+					modal.append(form);
+				} else {
+					form.attr('action', action);
+					form.empty(); // Limpiar el formulario existente
+				}
+
+				form.append('<input type="hidden" name="operation" id="operation" value="' + operation + '">');
+				form.append('<input type="hidden" name="id" id="id" value="' + (data.id || '') + '">');
+				
+				let modalContent = $('<div class="modal-content"></div>');
+				let modalHeader = $('<div class="modal-header"></div>');
+				let title = '';
+				if (operation === 'new') {
+					title = 'Nuevo Registro';
+				} else if (operation === 'view') {
+					title = 'Ver Registro';
+				} else if (operation === 'edit') {
+					title = 'Editar Registro';
+				} else if (operation === 'delete') {
+					title = 'Eliminar Registro';
+				}
+				modalHeader.append('<h5 class="modal-title">' + title + '</h5>');
+				modalHeader.append('<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>');
+				modalContent.append(modalHeader);
+
+				let modalBody = $('<div class="modal-body"></div>');
+				if (operation === 'delete') {
+					modalBody.append('<p>¿Está seguro de que desea eliminar este registro?</p>');
+				} else {
+					for (let key in data) {
+						if (data.hasOwnProperty(key)) {
+							if(key === 'id') continue; // No mostrar el campo ID en el formulario
+							let field = $('<div class="mb-3"></div>');
+							let label = $('<label class="form-label"></label>').attr('for',key).text(key.charAt(0).toUpperCase() + key.slice(1));
+							let input = $('<input type="text" class="form-control">').attr('name', key).attr('id', key).val(data[key]);
+							input.prop('required', true);
+							if (operation === 'view') {
+								input.prop('readonly', true);
+							}
+							field.append(label).append(input);
+							modalBody.append(field);
+						}
+					}
+				}
+				modalContent.append(modalBody);
+
+				let modalFooter = $('<div class="modal-footer"></div>');
+				if(operation === 'new'){
+					modalFooter.append('<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>');
+					modalFooter.append('<button type="submit" class="btn btn-primary">Guardar</button>');
+				}else
+				if (operation === 'view') {
+					modalFooter.append('<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>');
+				} else 
+				if (operation === 'edit') {
+					modalFooter.append('<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>');
+					modalFooter.append('<button type="submit" class="btn btn-primary">Guardar</button>');
+				} else 
+				if (operation === 'delete') {
+					modalFooter.append('<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>');
+					modalFooter.append('<button type="submit" class="btn btn-danger">Eliminar</button>');
+				}
+				modalContent.append(modalFooter);
+
+				form.append(modalContent);
+				return modal;
 			}
 		
 			function handleAjaxFormSubmit(formSelector, onSuccess=null, onError=null) {

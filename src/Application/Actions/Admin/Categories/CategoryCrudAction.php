@@ -21,33 +21,24 @@ class CategoryCrudAction
     public function __invoke(Request $request, Response $response, array $args = []): Response
     {
         if ($request->getMethod() === 'POST') {
-            return $this->post($request, $response , $args);
+            return $this->post($request, $response, $args);
         }
         return $this->get($request, $response, $args);
     }
 
     public function get(Request $request, Response $response, array $args = []): Response
     {
-        $id = $args['id'] ?? 0;
+        $id = $args['id'] ?? null;
         $toSendData = null;
-        if($id>0){
+        if ($id !== null ) {
             $category = $this->categoryRepository->findById((int) $id);
-            if ($category) {
-                // Convertir el objeto Category a un array plano
-                $toSendData = [
-                    'id' => $category->id,
-                    'name' => $category->detail->name,
-                    'description' => $category->detail->description,
-                ];
-            } else {
-                $response->getBody()->write(json_encode([
-                    'success' => false,
-                    'message' => 'Category not found.'
-                ]));
-                return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
-            }
-        }
-        else{
+            // Convertir el objeto Category a un array plano
+            $toSendData = [
+                'id' => $category->id ?? 0,
+                'name' => $category->detail->name ?? '',
+                'description' => $category->detail->description ?? '',
+            ];
+        } else {
             $toSendData = $this->categoryRepository->findAll(false);
         }
         $response->getBody()->write(json_encode([
@@ -64,9 +55,9 @@ class CategoryCrudAction
         $operation = $data['operation'] ?? '';
 
         switch ($operation) {
-            case 'create':
+            case 'new':
                 return $this->create($request, $response, $data);
-            case 'update':
+            case 'edit':
                 return $this->update($request, $response, $data);
             //case 'delete':
             //return $this->delete($request, $response, $data);
@@ -96,16 +87,11 @@ class CategoryCrudAction
             $description
         ));
 
-        $_id = $this->categoryRepository->save($category);
+        $this->categoryRepository->save($category);
 
         $response->getBody()->write(json_encode([
             'success' => true,
             'message' => 'Category created successfully.',
-            'category' => [
-                'id' => $_id,
-                'name' => $category->detail->name,
-                'description' => $category->detail->description,
-            ]
         ]));
         return $response->withHeader('Content-Type', 'application/json');
     }
@@ -113,7 +99,7 @@ class CategoryCrudAction
     private function update(Request $request, Response $response, array $data): Response
     {
         // Implement update logic here
-        $this->categoryRepository->save(new Category(
+        $this->categoryRepository->update(new Category(
             $data['id'],
             new CategoryDetail(
                 $data['name'] ?? '',
@@ -121,10 +107,11 @@ class CategoryCrudAction
             )
         ));
         $response->getBody()->write(json_encode([
-            'success' => false,
-            'message' => 'Update operation not implemented.'
+            'success' => true,
+            'message' => 'Category updated successfully.',
         ]));
-        return $response->withStatus(501)->withHeader('Content-Type', 'application/json');
+
+        return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
     }
 }
 

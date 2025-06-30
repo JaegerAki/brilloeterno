@@ -18,7 +18,6 @@ class CategoryAction{
 
     public function __invoke(Request $request, Response $response, array $args = []): Response
     {
-        //$categories = $this->categoryRepository->findAll();
         return $this->twig->render($response, 'admin/categories/list.twig', [
             'title' => 'Categorias',
             'model' => ['id','nombre','descripcion'],

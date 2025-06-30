@@ -78,14 +78,16 @@ return function (App $app) {
             $inventory->map(['GET', 'POST'], '/edit/{id}', InventoryEditAction::class);
             $inventory->get('/{id}', InventoryReadAction::class);
         });
+
         $group->group('/users', function (Group $users) {
             $users->get('', AdminUserAction::class);
             $users->get('/{id}', AdminUserReadAction::class);
         });
+        
         $group->group('/categories', function (Group $categories) {
             $categories->get('', CategoryAction::class);
-            $categories->get('/{id}', CategoryAction::class);
             $categories->map(['GET', 'POST'], '/crud', CategoryCrudAction::class);
+            $categories->map(['GET'], '/crud/{id}', CategoryCrudAction::class);
         });
         $group->group('/customers', function (Group $customers) {
             $customers->get('', CustomerAction::class);

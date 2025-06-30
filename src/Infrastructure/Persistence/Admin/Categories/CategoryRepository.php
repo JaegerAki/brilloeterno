@@ -90,11 +90,11 @@ class CategoryRepository implements CategoryRepositoryInterface
             SET nombre = :name, descripcion = :description 
             WHERE idcategoria = :id'
         );
-        $stmt->bindParam(':id', $category->id, PDO::PARAM_INT);
-        $stmt->bindParam(':name', $category->detail->name);
-        $stmt->bindParam(':description', $category->detail->description);
+        $stmt->bindValue(':id', $category->id, PDO::PARAM_INT);
+        $stmt->bindValue(':name', $category->detail->name);
+        $stmt->bindValue(':description', $category->detail->description);
         if ($stmt->execute()) {
-            return (int) $category->id;
+            return (int) $stmt->rowCount();
         } else {
             throw new \RuntimeException('Failed to update category');
         }

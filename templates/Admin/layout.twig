@@ -254,35 +254,26 @@
 			}
 
 			function createFormModal(data, method, action, modalForm="#modalForm") {
-				//dentro de <form> debera ir el modal-header, modal-body y modal-footer </form>
-				// dentro de modal-header debera el titulo del modal y el boton de cerrar
-				// y dentro de modal-body debera los formularios
-				// y dentro de modal-footer debera los botones de cerrar y submit
-				
 				let modal = $(modalForm);
 				let form = modal.find('form');
-				form.html(''); // Limpiar el contenido del formulario existente
 				if (form.length === 0) {
 					form = $('<form></form>').attr('method', method).attr('action', action);
 					modal.append(form);
 				} else {
-					form.attr('method',method).attr('action', action);
-					form.empty(); // Limpiar el formulario existente
+					form.attr('method', method).attr('action', action);
+					form.empty();
 				}
-				form.append('<input type="hidden" name="id" id="id" value="' + (data.id || '') + '">');
+
 				let modalContent = $('<div class="modal-content"></div>');
 				let modalHeader = $('<div class="modal-header"></div>');
 				let title = '';
 				if (method === 'GET') {
 					title = 'Ver';
-				} else 
-				if (method === 'PATCH') {
+				} else if (method === 'PATCH') {
 					title = 'Editar';
-				} else 
-				if (method === 'DELETE') {
+				} else if (method === 'DELETE') {
 					title = 'Eliminar';
-				}
-				else {
+				} else {
 					title = 'Nuevo';
 				}
 				modalHeader.append('<h5 class="modal-title">' + title + '</h5>');
@@ -293,36 +284,81 @@
 				if (method === 'DELETE') {
 					modalBody.append('<p>¿Está seguro de que desea eliminar este registro?</p>');
 				} else {
-					for (let key in data) {
-						if (data.hasOwnProperty(key)) {
-							if(key === 'id') continue; // No mostrar el campo ID en el formulario
-							let field = $('<div class="mb-3"></div>');
-							let label = $('<label class="form-label"></label>').attr('for',key).text(key.charAt(0).toUpperCase() + key.slice(1));
-							let input = $('<input type="text" class="form-control">').attr('name', key).attr('id', key).val(data[key]);
-							input.prop('required', true);
-							if (method === 'GET' || method === 'DELETE') {
-								input.prop('readonly', true);
-							}
-							field.append(label).append(input);
-							modalBody.append(field);
+					data.forEach(function(field) {
+						let fieldDiv = $('<div class="mb-3"></div>');
+						let inputType = field.input || 'text';
+						let label = $('<label class="form-label"></label>').attr('for', field.key).text(field.key.charAt(0).toUpperCase() + field.key.slice(1));
+						let input;
+
+						let attrs = {};
+						if (field.validations) {
+							if (field.validations.required) attrs.required = true;
+							if (field.validations.min !== undefined) attrs.min = field.validations.min;
+							if (field.validations.max !== undefined) attrs.max = field.validations.max;
+							if (field.validations.minLength !== undefined) attrs.minlength = field.validations.minLength;
+							if (field.validations.maxLength !== undefined) attrs.maxlength = field.validations.maxLength;
+							//agregar step
+							if (field.validations.step !== undefined) attrs.step = field.validations.step;
+							if (field.validations.maxSizeMB !== undefined && inputType === 'file') attrs['data-max-size'] = field.validations.maxSizeMB * 1024 * 1024;
+							if (field.validations.fileType && inputType === 'file') attrs.accept = field.validations.fileType.map(ext => '.' + ext).join(',');
 						}
-					}
+
+						if (inputType === 'hidden') {
+							input = $('<input type="hidden">').attr('name', field.key).attr('id', field.key).val(field.value);
+							fieldDiv.append(input);
+						} else if (inputType === 'textarea') {
+							input = $('<textarea class="form-control"></textarea>').attr('name', field.key).attr('id', field.key).val(field.value);
+							Object.entries(attrs).forEach(([k, v]) => input.attr(k, v));
+							if (method === 'GET' || method === 'DELETE') input.prop('readonly', true);
+							fieldDiv.append(label).append(input);
+						} else if (inputType === 'select') {
+							input = $('<select class="form-select"></select>').attr('name', field.key).attr('id', field.key);
+							Object.entries(attrs).forEach(([k, v]) => input.attr(k, v));
+							if (Array.isArray(field.options)) {
+								field.options.forEach(function(opt) {
+									let option = $('<option></option>').attr('value', opt.value).text(opt.label);
+									if (String(opt.value) === String(field.value)) option.attr('selected', true);
+									input.append(option);
+								});
+							}
+							if (method === 'GET' || method === 'DELETE') input.prop('disabled', true);
+							fieldDiv.append(label).append(input);
+						} else 
+						if (inputType === 'file') {
+							input = $('<input type="file" class="form-control">').attr('name', field.key).attr('id', field.key);
+							Object.entries(attrs).forEach(([k, v]) => input.attr(k, v));
+							if (method === 'GET' || method === 'DELETE') input.prop('disabled', true);
+							fieldDiv.append(label).append(input);
+							if (field.value && typeof field.value === 'string' && field.value.length > 0) {
+								let imgPreview = $('<img class="img-thumbnail mt-2" style="max-width:120px;max-height:120px;">').attr('src', "{{ picturePath }}/"+field.value);
+								fieldDiv.append(imgPreview);
+								//desactivar el required si es EDIT
+								if (method === 'PATCH') {
+									input.removeAttr('required');
+								}
+							}
+						} 
+						else {
+							input = $('<input class="form-control">').attr('type', inputType).attr('name', field.key).attr('id', field.key).val(field.value);
+							Object.entries(attrs).forEach(([k, v]) => input.attr(k, v));
+							if (method === 'GET' || method === 'DELETE') input.prop('readonly', true);
+							fieldDiv.append(label).append(input);
+						}
+						modalBody.append(fieldDiv);
+					});
 				}
 				modalContent.append(modalBody);
 
 				let modalFooter = $('<div class="modal-footer"></div>');
 				if (method === 'GET') {
 					modalFooter.append('<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>');
-				} else 
-				if (method === 'PATCH') {
+				} else if (method === 'PATCH') {
 					modalFooter.append('<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>');
 					modalFooter.append('<button type="submit" class="btn btn-primary">Guardar</button>');
-				} else 
-				if (method === 'DELETE') {
+				} else if (method === 'DELETE') {
 					modalFooter.append('<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>');
 					modalFooter.append('<button type="submit" class="btn btn-danger">Eliminar</button>');
-				}
-				else {
+				} else {
 					modalFooter.append('<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>');
 					modalFooter.append('<button type="submit" class="btn btn-primary">Guardar</button>');
 				}
@@ -335,28 +371,28 @@
 				$(formSelector).on('submit', function(e) {
 					e.preventDefault();
 		
-					var form = this;
-					var method = $(form).attr('method').toUpperCase();
-					var formData, ajaxSettings;
-					
-					// Para PATCH, enviar como JSON; para POST, usar FormData
+					let form = this;
+					const action = $(form).attr('action');
+					const method = $(form).attr('method').toUpperCase();
+					let formData, ajaxSettings;
 					if (method === 'PATCH') {
-						var formDataObj = {};
+						let formDataObj = {};
+						formData = new FormData(form);
 						$(form).serializeArray().forEach(function(item) {
 							formDataObj[item.name] = item.value;
 						});
 						
 						ajaxSettings = {
-							url: $(form).attr('action'),
+							url: action,
 							type: method,
-							data: JSON.stringify(formDataObj),
-							contentType: 'application/json',
-							dataType: 'json'
+							data: formData,
+							contentType: false,
+							processData: false,
 						};
 					} else {
 						formData = new FormData(form);
 						ajaxSettings = {
-							url: $(form).attr('action'),
+							url: action,
 							type: method,
 							data: formData,
 							processData: false,

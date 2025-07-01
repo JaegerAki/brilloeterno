@@ -29,10 +29,8 @@ use App\Application\Middleware\SessionMiddleware;
 use App\Application\Actions\Admin\Dashboard\DashboardAction;
 
 use App\Application\Actions\Admin\Inventory\InventoryAction;
-use App\Application\Actions\Admin\Inventory\InventoryReadAction;
-use App\Application\Actions\Admin\Inventory\InventoryCreateAction;
-use App\Application\Actions\Admin\Inventory\InventoryEditAction;
-use App\Application\Actions\Admin\Inventory\InventoryDeleteAction;
+use App\Application\Actions\Admin\Inventory\InventoryCrudAction;
+
 
 use App\Application\Actions\Admin\Users\UserAction as AdminUserAction;
 use App\Application\Actions\Admin\Users\UserReadAction as AdminUserReadAction;
@@ -73,10 +71,8 @@ return function (App $app) {
         });
         $group->group('/inventory', function (Group $inventory) {
             $inventory->get('', InventoryAction::class);
-            $inventory->map(['GET', 'POST'], '/create', InventoryCreateAction::class);
-            $inventory->map(['GET', 'POST'], '/delete/{id}', InventoryDeleteAction::class);
-            $inventory->map(['GET', 'POST'], '/edit/{id}', InventoryEditAction::class);
-            $inventory->get('/{id}', InventoryReadAction::class);
+            $inventory->map(['GET', 'POST','PATCH','DELETE'], '/crud', InventoryCrudAction::class);
+            $inventory->map(['GET'],'/crud/{id}', InventoryCrudAction::class);
         });
 
         $group->group('/users', function (Group $users) {
@@ -86,7 +82,7 @@ return function (App $app) {
         
         $group->group('/categories', function (Group $categories) {
             $categories->get('', CategoryAction::class);
-            $categories->map(['GET', 'POST','PATCH','DELETE'], '/crud', CategoryCrudAction::class);
+            $categories->map(['GET', 'POST','PATCH'], '/crud', CategoryCrudAction::class);
             $categories->map(['GET'], '/crud/{id}', CategoryCrudAction::class);
         });
         $group->group('/customers', function (Group $customers) {

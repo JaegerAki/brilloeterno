@@ -46,9 +46,37 @@ class CategoryCrudAction
             $category = $this->categoryRepository->get((int) $id);
             // Convertir el objeto Category a un array plano
             $toSendData = [
-                'id' => $category->id ?? 0,
-                'name' => $category->detail->name ?? '',
-                'description' => $category->detail->description ?? '',
+                [
+                    'key' => 'name',
+                    'value' => $category->detail->name ?? '',
+                    'type' => 'string',
+                    'input' => 'text',
+                    'validations' => [
+                        'required' => true,
+                        'minLength' => 2,
+                        'maxLength' => 100,
+                    ],
+                ],
+                [
+                    'key' => 'description',
+                    'value' => $category->detail->description ?? '',
+                    'type' => 'string',
+                    'input' => 'textarea',
+                    'validations' => [
+                        'required' => true,
+                        'minLength' => 2,
+                        'maxLength' => 255,
+                    ],
+                ],
+                [
+                    'key' => 'id',
+                    'value' => $category->id ?? 0,
+                    'type' => 'integer',
+                    'input' => 'hidden',
+                    'validations' => [
+                        'required' => true,
+                    ],
+                ],
             ];
         } else {
             $toSendData = $this->categoryRepository->findAll(false);
@@ -91,30 +119,23 @@ class CategoryCrudAction
 
     private function patch(Request $request, Response $response, array $args): Response
     {
-        // Para PATCH, intentar parsear JSON primero
         $data = $request->getParsedBody() ?: [];
-        
-        // Si getParsedBody() está vacío, intentar parsear JSON del body
+
         if (empty($data)) {
             $body = (string) $request->getBody();
             if (!empty($body)) {
                 $data = json_decode($body, true) ?: [];
             }
         }
-        
-        // Debug: Log de los datos recibidos
-        //error_log("PATCH data received: " . print_r($data, true));
-        
-        // Validar que los datos requeridos estén presentes
+
         if (empty($data['id']) || empty($data['name']) || empty($data['description'])) {
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'ID, name and description are required for update.',
-                //'debug' => $data // Agregar debug info
             ]));
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         }
-        
+
         $this->categoryRepository->update(new Category(
             (int) $data['id'],
             new CategoryDetail(
@@ -122,7 +143,7 @@ class CategoryCrudAction
                 trim($data['description'])
             )
         ));
-        
+
         $response->getBody()->write(json_encode([
             'success' => true,
             'message' => 'Categoria actualizado exitosamente.',

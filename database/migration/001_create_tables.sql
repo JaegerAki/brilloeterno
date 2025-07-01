@@ -1,6 +1,6 @@
 CREATE TABLE tipo_identificacion (
     idtipoidentificacion INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(50) NOT NULL
+    nombre VARCHAR(50) NOT NULL UNIQUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE cliente (
@@ -15,7 +15,7 @@ CREATE TABLE cliente (
 
 CREATE TABLE categoria (
     idcategoria INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) UNIQUE NOT NULL ,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
     descripcion VARCHAR(255)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -56,7 +56,7 @@ CREATE TABLE carrito_detalles (
 
 CREATE TABLE metodos_pago (
     idmetodopago INT AUTO_INCREMENT PRIMARY KEY,
-    codigo VARCHAR(4) NOT NULL,
+    codigo VARCHAR(4) NOT NULL UNIQUE,
     nombre VARCHAR(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -108,7 +108,7 @@ CREATE TABLE detalle_personalizacion (
 -- ---------------------------------------------------------------------------------
 CREATE TABLE opcion (
     idopcion INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
     descripcion VARCHAR(255),
     ruta VARCHAR(255) NOT NULL,
     estado ENUM('activo', 'inactivo') NOT NULL DEFAULT 'activo'

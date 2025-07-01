@@ -14,49 +14,60 @@ class InventoryRepository implements InventoryRepositoryInterface
         $this->db = $db;
     }
 
-    public function getAllProducts(): array
+    public function findAll(bool $isObject = true): array
     {
         $stmt = $this->db->query(
             'SELECT 
-                p.idproducto AS id,
-                p.nombre AS name,
-                p.descripcion AS description,
-                p.precio AS price,
-                p.stock AS stock,
-                p.imagen AS picture,
-                c.idcategoria AS category_id,
-                c.nombre AS category_name,
-                c.descripcion AS category_description
+            p.idproducto AS id,
+            p.nombre AS name,
+            p.descripcion AS description,
+            p.precio AS price,
+            p.stock AS stock,
+            p.imagen AS picture,
+            c.idcategoria AS category_id,
+            c.nombre AS category_name,
+            c.descripcion AS category_description
             FROM producto p
             LEFT JOIN categoria c ON p.idcategoria = c.idcategoria'
         );
         $products = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $category = new ProductCategory(
-                (int) $row['category_id'],
-                $row['category_name'],
-                $row['category_description'] ?? ''
-            );
-            $productDetail = new ProductInventoryDetail(
-                $row['name'],
-                $row['description'],
-                (int) $row['stock'],
-                (float) $row['price'],
-                $row['picture']
-            );
-            $product = new ProductInventory(
-                (int) $row['id'],
-                $productDetail,
-                $category
-            );
-            //que sea iterables para twig
-            $products[] = $product;
+            if ($isObject) {
+                $category = new ProductCategory(
+                    (int) $row['category_id'],
+                    $row['category_name'],
+                    $row['category_description'] ?? ''
+                );
+                $productDetail = new ProductInventoryDetail(
+                    $row['name'],
+                    $row['description'],
+                    (int) $row['stock'],
+                    (float) $row['price'],
+                    $row['picture']
+                );
+                $product = new ProductInventory(
+                    (int) $row['id'],
+                    $productDetail,
+                    $category
+                );
+                $products[] = $product;
+            } else {
+                $products[] = [
+                    'id' => (int) $row['id'],
+                    'picture' => $row['picture'],
+                    'name' => $row['name'],
+                    'description' => $row['description'],
+                    'price' => (float) $row['price'],
+                    'stock' => (int) $row['stock'],
+                    'category' => $row['category_name'],
+                ];
+            }
         }
         return $products;
     }
-    
 
-    public function getProductById(int $id): ?ProductInventory
+
+    public function get(int $id): ?ProductInventory
     {
         $stmt = $this->db->prepare(
             'SELECT 
@@ -76,31 +87,64 @@ class InventoryRepository implements InventoryRepositoryInterface
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
 
-        if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $category = new ProductCategory(
-                (int) $row['category_id'],
-                $row['category_name'],
-                $row['category_description'] ?? ''
-            );
-            return new ProductInventory(
-                (int) $row['id'],
-                new ProductInventoryDetail(
-                    $row['name'],
-                    $row['description'],
-                    (int) $row['stock'],
-                    (float) $row['price'],
-                    $row['picture']
-                ),
-                $category
-            );
-        }
-        return null;
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if(!$row) {
+            return null; // No product found
+        }   
+        $category = new ProductCategory(
+            (int) $row['category_id'],
+            $row['category_name'],
+            $row['category_description'] ?? ''
+        );
+        return new ProductInventory(
+            (int) $row['id'],
+            new ProductInventoryDetail(
+                $row['name'],
+                $row['description'],
+                (int) $row['stock'],
+                (float) $row['price'],
+                $row['picture']
+            ),
+            $category
+        );
+        
     }
 
-    public function saveProduct(ProductInventory $product): void
+    public function insert(ProductInventory $product): int
     {
         $fields = ['idproducto', 'nombre', 'descripcion', 'precio', 'stock', 'idcategoria'];
         $params = [':id', ':name', ':description', ':price', ':stock', ':category_id'];
+
+        $picture = $product->productInventoryDetail->picture;
+        if ($picture !== null) {
+            $fields[] = 'imagen';
+            $params[] = ':picture';
+        }
+
+        $sql = sprintf(
+            'INSERT INTO producto (%s) VALUES (%s)',
+            implode(', ', $fields),
+            implode(', ', $params)
+        );
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id', $product->id, PDO::PARAM_INT);
+        $stmt->bindValue(':name', $product->productInventoryDetail->name);
+        $stmt->bindValue(':description', $product->productInventoryDetail->description);
+        $stmt->bindValue(':price', $product->productInventoryDetail->price);
+        $stmt->bindValue(':stock', $product->productInventoryDetail->stock);
+        $stmt->bindValue(':category_id', $product->productCategory->id, PDO::PARAM_INT);
+        if ($picture !== null) {
+            $stmt->bindValue(':picture', $picture);
+        }
+        if (!$stmt->execute()) {
+            throw new \Exception('Error inserting product: ' . implode(', ', $stmt->errorInfo()));
+        }
+        return (int) $this->db->lastInsertId();
+    }
+
+    public function update(ProductInventory $product): int
+    {
         $updates = [
             'nombre = :name',
             'descripcion = :description',
@@ -110,17 +154,12 @@ class InventoryRepository implements InventoryRepositoryInterface
         ];
 
         $picture = $product->productInventoryDetail->picture;
-        if ($picture !== null) {
-            $fields[] = 'imagen';
-            $params[] = ':picture';
+        if ($picture !== null || $picture !== '') {
             $updates[] = 'imagen = :picture';
         }
 
         $sql = sprintf(
-            'INSERT INTO producto (%s) VALUES (%s)
-            ON DUPLICATE KEY UPDATE %s',
-            implode(', ', $fields),
-            implode(', ', $params),
+            'UPDATE producto SET %s WHERE idproducto = :id',
             implode(', ', $updates)
         );
 
@@ -135,11 +174,15 @@ class InventoryRepository implements InventoryRepositoryInterface
             $stmt->bindValue(':picture', $picture);
         }
         if (!$stmt->execute()) {
-            throw new \Exception('Error saving product: ' . implode(', ', $stmt->errorInfo()));
+            throw new \Exception('Error al intentar modificar: ' . implode(', ', $stmt->errorInfo()));
         }
+        if ($stmt->rowCount() === 0) {
+            throw new \Exception('El producto no ha sido modificado o no existe.');
+        }
+        return $stmt->rowCount();
     }
 
-    public function deleteProduct(int $id): void
+    public function delete(int $id): int
     {
         $stmt = $this->db->prepare('DELETE FROM producto WHERE idproducto = :id');
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -147,62 +190,6 @@ class InventoryRepository implements InventoryRepositoryInterface
         if ($stmt->rowCount() === 0) {
             throw new \Exception('Product not found or could not be deleted.');
         }
-    }
-
-    public function getAllCategories(): array
-    {
-        $stmt = $this->db->query('SELECT idcategoria AS id, nombre AS name, descripcion AS description FROM categoria');
-        $categories = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $categories[] = new ProductCategory(
-                (int) $row['id'],
-                $row['name'],
-                $row['description'] ?? ''
-            );
-        }
-        return $categories;
-    }
-
-    public function getCategoryById(int $id): ?ProductCategory
-    {
-        $stmt = $this->db->prepare('SELECT idcategoria AS id, nombre AS name, descripcion AS description FROM categoria WHERE idcategoria = :id');
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-
-        if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            return new ProductCategory(
-                (int) $row['id'],
-                $row['name'],
-                $row['description'] ?? ''
-            );
-        }
-        return null;
-    }
-
-    public function saveCategory(ProductCategory $category): void
-    {
-        $stmt = $this->db->prepare(
-            'INSERT INTO categoria (idcategoria, nombre, descripcion)
-            VALUES (:id, :name, :description)
-            ON DUPLICATE KEY UPDATE 
-                nombre = :name,
-                descripcion = :description'
-        );
-        $stmt->bindValue(':id', $category->id, PDO::PARAM_INT);
-        $stmt->bindValue(':name', $category->name);
-        $stmt->bindValue(':description', $category->description);
-        if (!$stmt->execute()) {
-            throw new \Exception('Error saving category: ' . implode(', ', $stmt->errorInfo()));
-        }
-    }
-
-    public function deleteCategory(int $id): void
-    {
-        $stmt = $this->db->prepare('DELETE FROM categoria WHERE idcategoria = :id');
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        if ($stmt->rowCount() === 0) {
-            throw new \Exception('Category not found or could not be deleted.');
-        }
+        return $stmt->rowCount();
     }
 }

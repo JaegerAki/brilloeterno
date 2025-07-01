@@ -10,8 +10,8 @@
 	{% include "Admin/_modal_form.twig" %}
 	 <script>
 			document.addEventListener('DOMContentLoaded', function() {
-				const urlCategories = '{{basePath}}/admin/categories/crud';
-				createDatatableWithAjax('#categoriesTable',urlCategories,['view','edit'])
+				const urlCrud = '{{basePath}}/admin/categories/crud';
+				createDatatableWithAjax('#categoriesTable',urlCrud,['view','edit'])
 				
 				handleAjaxFormSubmit('#modalForm form', function(data) {
 					table = $('#categoriesTable').DataTable();
@@ -22,14 +22,14 @@
 					let row = $(this).closest('tr');
 					let id = row.find('td:first').text();
 	
-					let data = retrieveDataById(id, urlCategories);
-					createFormModal(data,'GET',urlCategories)
+					let data = retrieveDataById(id, urlCrud);
+					createFormModal(data,'GET',urlCrud)
 					$('#modalForm').modal('show');
 				});
 	
 				$(document).on('click', 'a[data-bs-action="new"]', function() {
-					let data = retrieveDataById(0, urlCategories);
-					createFormModal(data,'POST',urlCategories);
+					let data = retrieveDataById(0, urlCrud);
+					createFormModal(data,'POST',urlCrud);
 					$('#modalForm').modal('show');
 				});
 	
@@ -41,8 +41,8 @@
 					let row = $(this).closest('tr');
 					let id = row.find('td:first').text();
 					
-					let data = retrieveDataById(id, urlCategories);
-					createFormModal(data,'PATCH',urlCategories)
+					let data = retrieveDataById(id, urlCrud);
+					createFormModal(data,'PATCH',urlCrud)
 					$('#modalForm').modal('show');
 				});
 			});

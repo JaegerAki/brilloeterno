@@ -5,12 +5,12 @@ use App\Domain\Admin\Inventory\ValueObject\ProductInventoryDetail;
 use App\Domain\Admin\Inventory\ProductCategory;
 class ProductInventory
 {
-    public readonly int $id;
-    public readonly ProductInventoryDetail $productInventoryDetail;
-    public readonly ProductCategory $productCategory;
+    public int $id;
+    public ProductInventoryDetail $productInventoryDetail;
+    public ProductCategory $productCategory;
 
     public function __construct(
-        int $id,
+        ?int $id,
         ProductInventoryDetail $productInventoryDetail,
         ProductCategory $productCategory
     ) {
